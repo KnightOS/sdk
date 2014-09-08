@@ -4,7 +4,7 @@ function dispUsage()
 {
 	cat <<EOF
 Usage :
-  ./knightos [init|update|get|help] [options...]
+  ./knightos [init|update|help] [options...]
   
   init file	     Creates a new KnightOS ASM project template
   update            Grabs latest kernel and userspace from build server
