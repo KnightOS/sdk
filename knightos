@@ -1,0 +1,90 @@
+#!/bin/bash
+
+function dispUsage()
+{
+	cat <<EOF
+Usage :
+  ./knightos [init|update|get|help] [options...]
+  
+  init file	     Creates a new KnightOS ASM project template
+  update            Grabs latest kernel and userspace from build server
+  help              Displays this page
+EOF
+	exit 1
+}
+
+function init()
+{
+	if [ -z $2 ]; then
+		echo -e "Invalid usage.\n"
+		dispUsage
+	fi
+	cat > Makefile <<EOF
+OUTDIR:=bin/
+BINDIR:=\$(OUTDIR)bin/
+
+DEPENDENCIES=
+
+all: \$(BINDIR)$2
+
+\$(BINDIR)$2: main.asm
+	mkdir -p \$(BINDIR)
+	\$(AS) \$(ASFLAGS) --define "\$(PLATFORM)" --include "\$(INCLUDE);\$(PACKAGEPATH)/$2/;\$(DEPENDENCIES)" main.asm bin/bin/$2
+
+clean:
+	rm -rf \$(OUTDIR)
+
+.PHONY: all clean
+EOF
+	cat > main.asm <<EOF
+#include "kernel.inc"
+	.db "KEXC"
+	.db KEXC_ENTRY_POINT
+	.dw start
+	.db KEXC_HEADER_END
+start:
+	ret
+EOF
+	cat > knightos.config <<EOF
+assembler=sass
+emulator=z80e-sdl
+main=/bin/pong
+EOF
+echo "Created new KnightOS project $2."
+}
+
+function update()
+{
+	:
+}
+
+function get()
+{
+	if [ -z $2 ]; then
+		echo -e "Invalid usage.\n"
+		dispUsage
+		exit 1
+	fi
+	source ./knightos.config
+    eval a=\$$2
+    echo "$2 = $a"
+}
+
+if [ $# -eq 0 ]; then
+	echo -e "Invalid usage.\n"
+	dispUsage
+	exit 1
+fi
+case $1 in
+init)
+	init $@
+	;;
+update)
+	update $@
+	;;
+get)
+	get $@
+	;;
+help)
+	dispUsage;;
+esac
