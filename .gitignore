@@ -3,3 +3,5 @@ include
 lib
 *.swp
 __pycache__
+!templates/**/bin
+!templates/**/lib
