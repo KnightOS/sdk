@@ -3,13 +3,17 @@
 
 Usage:
   knightos init <name> [<root>]
-  knightos build
-  knightos run
-  knightos deploy
+  knightos package
+  knightos install <package>
+  knightos uninstall <package>
   knightos -h | --help
   knightos --version
 
 Options:
+  init          Initializes a new KnightOS project here
+  package       Bundles this project into a package
+  install       Installs the specified dependency
+  uninstall     Removes the specified dependency
   -h --help     Show this screen.
   --version     Show version.
   
@@ -17,13 +21,7 @@ Options:
 """
 from docopt import docopt
 from init import execute as cmd_init
-from build import execute as cmd_build
-from run import execute as cmd_run
-from deploy import execute as cmd_deploy
 
 args = docopt(__doc__, version="0.0.1")
 
 if args["init"]: cmd_init(args["<name>"], root=args["<root>"])
-elif args["build"]: cmd_build()
-elif args["run"]: cmd_run()
-elif args["deploy"]: cmd_deploy()
