@@ -1,6 +1,7 @@
 bin
 include
 lib
+kernel
 *.swp
 __pycache__
 !templates/**/bin

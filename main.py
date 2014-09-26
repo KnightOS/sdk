@@ -2,7 +2,7 @@
 """KnightOS SDK
 
 Usage:
-  knightos init [<projectroot>]
+  knightos init <name> [<root>]
   knightos build
   knightos run
   knightos deploy
@@ -23,7 +23,7 @@ from deploy import execute as cmd_deploy
 
 args = docopt(__doc__, version="0.0.1")
 
-if args["init"]: cmd_init(root=args["<projectroot>"])
+if args["init"]: cmd_init(args["<name>"], root=args["<root>"])
 elif args["build"]: cmd_build()
 elif args["run"]: cmd_run()
 elif args["deploy"]: cmd_deploy()
