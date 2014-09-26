@@ -3,7 +3,7 @@ import requests
 from sys import stderr, exit
 from resources import get_resource_root
 
-def prepare_enviornment():
+def prepare_environment():
     kernel = os.path.join(get_resource_root(), "kernel")
     os.makedirs(kernel, mode=0o755, exist_ok=True)
     kernels = [ "ti73", "ti83p", "ti83pSE", "ti84p", "ti84pSE", "ti84pCSE" ]

@@ -3,7 +3,7 @@ import shutil
 import os
 from resources import read_template, get_resource_root, get_kernel, get_kernel_inc
 from project import Project
-from knightos import prepare_enviornment
+from knightos import prepare_environment
 
 def copytree(src, dst, symlinks=False, ignore=None): # shutil.copytree doesn't let you merge dirs
     if not os.path.exists(dst):
@@ -19,7 +19,7 @@ def copytree(src, dst, symlinks=False, ignore=None): # shutil.copytree doesn't l
 
 def execute(project_name, root=None):
     if root == None: root = os.getcwd()
-    prepare_enviornment()
+    prepare_environment()
     setup_root(root)
     proj = Project(root)
     proj.open(os.path.join(root, ".gitignore"), "w+").write(read_template("gitignore", project_name))
