@@ -6,3 +6,4 @@ kernel
 __pycache__
 !templates/**/bin
 !templates/**/lib
+!templates/**/include

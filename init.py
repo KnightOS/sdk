@@ -29,9 +29,13 @@ def execute(project_name, root=None):
     proj.open(os.path.join(root, ".knightos", "variables.make"), "w+").write(read_template("variables.make", project_name))
     shutil.copyfile(get_kernel(), os.path.join(root, ".knightos", "kernel.rom"))
     shutil.copyfile(get_kernel_inc(), os.path.join(root, ".knightos", "include", "kernel.inc"))
-    # Temporary - install a couple of required packages
-    copytree(os.path.join(get_resource_root(), "templates", "temp", "base"), os.path.join(root, ".knightos", "pkgroot"))
-    copytree(os.path.join(get_resource_root(), "templates", "temp", "corelib"), os.path.join(root, ".knightos", "pkgroot"))
+    default_packages = ["base", "corelib"]
+    # Temporary - install a couple of required packages manually
+    for p in default_packages:
+        copytree(os.path.join(get_resource_root(), "templates", "temp", p), os.path.join(root, ".knightos", "pkgroot"))
+    if os.path.isdir(os.path.join(root, ".knightos", "pkgroot", "include")):
+        copytree(os.path.join(root, ".knightos", "pkgroot", "include"), os.path.join(root, ".knightos"))
+    # End temporary
 
 def setup_root(root):
     os.makedirs(root, mode=0o755, exist_ok=True)
