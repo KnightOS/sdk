@@ -1,0 +1,14 @@
+KnightOS SDK
+
+Usage:
+  knightos init [<projectroot>]
+  knightos build
+  knightos run
+  knightos deploy
+  knightos -h | --help
+  knightos --version
+
+Options:
+  -h --help     Show this screen.
+  --version     Show version.
+  
