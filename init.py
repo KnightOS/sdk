@@ -34,7 +34,7 @@ def execute(project_name, root=None):
     for p in default_packages:
         copytree(os.path.join(get_resource_root(), "templates", "temp", p), os.path.join(root, ".knightos", "pkgroot"))
     if os.path.isdir(os.path.join(root, ".knightos", "pkgroot", "include")):
-        copytree(os.path.join(root, ".knightos", "pkgroot", "include"), os.path.join(root, ".knightos"))
+        copytree(os.path.join(root, ".knightos", "pkgroot", "include"), os.path.join(root, ".knightos", "include"))
     # End temporary
 
 def setup_root(root):
