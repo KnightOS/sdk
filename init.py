@@ -9,37 +9,49 @@ from knightos import prepare_environment
 from util import copytree
 from install import execute as cmd_install
 
-def execute(project_name, root=None):
+def execute(project_name=None, root=None):
     if root == None: root = os.getcwd()
-    print("Installing templates...")
-    setup_root(root)
+    exists = setup_root(root)
+    if not exists and not project_name:
+        stderr.write("You must specify a project name for new projects.\n")
+        exit(1)
     proj = Project(root)
-    proj.open(os.path.join(root, ".gitignore"), "w+").write(read_template("gitignore", project_name))
-    proj.open(os.path.join(root, "main.asm"), "w+").write(read_template("main.asm", project_name))
-    proj.open(os.path.join(root, "Makefile"), "w+").write(read_template("Makefile", project_name))
-    proj.open(os.path.join(root, "package.config"), "w+").write(read_template("package.config", project_name))
+    if exists and not project_name:
+        project_name = proj.get_config("name")
+    print("Installing SDK...")
     proj.open(os.path.join(root, ".knightos", "sdk.make"), "w+").write(read_template("sdk.make", project_name))
     proj.open(os.path.join(root, ".knightos", "variables.make"), "w+").write(read_template("variables.make", project_name))
     install_kernel(os.path.join(root, ".knightos"))
     shutil.move(os.path.join(root, ".knightos", "kernel.inc"), os.path.join(root, ".knightos", "include", "kernel.inc"))
     shutil.move(os.path.join(root, ".knightos", "kernel-TI84pSE.rom"), os.path.join(root, ".knightos", "kernel.rom"))
+    if not exists:
+        print("Installing templates...")
+        proj.open(os.path.join(root, ".gitignore"), "w+").write(read_template("gitignore", project_name))
+        proj.open(os.path.join(root, "main.asm"), "w+").write(read_template("main.asm", project_name))
+        proj.open(os.path.join(root, "Makefile"), "w+").write(read_template("Makefile", project_name))
+        proj.open(os.path.join(root, "package.config"), "w+").write(read_template("package.config", project_name))
     default_packages = ["core/init"]
     cmd_install(default_packages, site_only=True)
     if shutil.which('git') != None:
-        print("Initializing new git repository...")
-        FNULL = open(os.devnull, 'w')
-        subprocess.call(["git", "init", root], stdout=FNULL, stderr=subprocess.STDOUT)
+        if not os.path.exists(os.path.join(root, ".git")):
+            print("Initializing new git repository...")
+            FNULL = open(os.devnull, 'w')
+            subprocess.call(["git", "init", root], stdout=FNULL, stderr=subprocess.STDOUT)
     print("All done! You can use `make help` to find out what to do next.")
 
 def setup_root(root):
     os.makedirs(root, mode=0o755, exist_ok=True)
+    exists = False
     if len(os.listdir(root)) > 0:
+        exists = True
+    if os.path.exists(os.path.join(root, ".knightos")):
         stderr.write("{path} not empty. Aborting.\n".format(path=os.path.relpath(root)))
         exit(1)
     os.makedirs(os.path.join(root, ".knightos"), mode=0o755)
     os.makedirs(os.path.join(root, ".knightos", "include"), mode=0o755)
     os.makedirs(os.path.join(root, ".knightos", "packages"), mode=0o755)
     os.makedirs(os.path.join(root, ".knightos", "pkgroot"), mode=0o755)
+    return exists
 
 def install_kernel(root):
     release = get_latest_kernel()
