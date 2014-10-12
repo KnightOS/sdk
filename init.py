@@ -18,6 +18,7 @@ def execute(project_name=None, root=None):
     proj = Project(root)
     if exists and not project_name:
         project_name = proj.get_config("name")
+        print("Found existing project: " + project_name)
     print("Installing SDK...")
     proj.open(os.path.join(root, ".knightos", "sdk.make"), "w+").write(read_template("sdk.make", project_name))
     proj.open(os.path.join(root, ".knightos", "variables.make"), "w+").write(read_template("variables.make", project_name))

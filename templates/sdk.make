@@ -24,7 +24,7 @@ clean:
 	@rm -rf $(SDK)debug.rom
 
 package:
-	kpack {{ project_name}}.pkg $(BIN)
+	kpack {{ project_name }}.pkg $(BIN)
 	
 help:
 	@echo "KnightOS Makefile for {{ project_name }}"
