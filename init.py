@@ -29,6 +29,7 @@ def execute(project_name, root=None):
         print("Initializing new git repository...")
         FNULL = open(os.devnull, 'w')
         subprocess.call(["git", "init", root], stdout=FNULL, stderr=subprocess.STDOUT)
+    print("All done! You can use `make help` to find out what to do next.")
 
 def setup_root(root):
     os.makedirs(root, mode=0o755, exist_ok=True)
