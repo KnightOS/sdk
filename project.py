@@ -1,4 +1,5 @@
 from sys import exit, stderr, stdout
+from util import copytree
 
 import os
 import requests
@@ -90,6 +91,9 @@ class Project:
             if ret != 0:
                 stderr.write("kpack returned status code {0}, aborting\n".format(ret))
                 exit(ret)
+            # Copy include files, if they exist
+            if os.path.exists(os.path.join(self.root, ".knightos", "pkgroot", "include")):
+                copytree(os.path.join(self.root, ".knightos", "pkgroot", "include"), os.path.join(self.root, ".knightos", "include"))
         print("Done!")
 
 def findroot():
