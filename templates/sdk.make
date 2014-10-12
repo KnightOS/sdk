@@ -25,6 +25,9 @@ clean:
 
 package:
 	kpack {{ project_name }}.pkg $(BIN)
+
+install: package
+	kpack -e -s {{ project_name }}.pkg $(PREFIX)
 	
 help:
 	@echo "KnightOS Makefile for {{ project_name }}"
@@ -35,6 +38,7 @@ help:
 	@echo "	run: 		Builds and runs the project in the emulator"
 	@echo "	debug: 		Builds and runs the project in the debugger"
 	@echo "	package:	Builds a KnightOS package"
+	@echo "	install:	Installs this package at the specified PREFIX"
 	@echo "	info:		Lists information about this project"
 
 info:

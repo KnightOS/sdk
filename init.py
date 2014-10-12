@@ -6,7 +6,7 @@ import requests
 from resources import read_template, get_resource_root, get_kernel, get_kernel_inc
 from project import Project
 from knightos import prepare_environment
-from util import copytree
+from util import copytree, which
 from install import execute as cmd_install
 
 def execute(project_name=None, root=None):
@@ -30,7 +30,7 @@ def execute(project_name=None, root=None):
         proj.open(os.path.join(root, "package.config"), "w+").write(read_template("package.config", project_name))
     default_packages = ["core/init"]
     cmd_install(default_packages, site_only=True)
-    if shutil.which('git') != None:
+    if which('git') != None:
         if not os.path.exists(os.path.join(root, ".git")):
             print("Initializing new git repository...")
             FNULL = open(os.devnull, 'w')
