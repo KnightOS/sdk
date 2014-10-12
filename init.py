@@ -21,6 +21,7 @@ def execute(project_name, root=None):
     proj.open(os.path.join(root, ".knightos", "variables.make"), "w+").write(read_template("variables.make", project_name))
     install_kernel(os.path.join(root, ".knightos"))
     shutil.move(os.path.join(root, ".knightos", "kernel.inc"), os.path.join(root, ".knightos", "include", "kernel.inc"))
+    shutil.move(os.path.join(root, ".knightos", "kernel-TI84pSE.rom"), os.path.join(root, ".knightos", "kernel.rom"))
     default_packages = ["core/init"]
     print("Installing default packages...")
     for package in default_packages:

@@ -10,7 +10,7 @@ all: $(ALL_TARGETS)
 	@cp $(SDK)kernel.rom $(SDK)debug.rom
 	@mkdir -p $(SDK)root/etc
 	@echo "/bin/{{ project_name }}" > $(SDK)root/etc/inittab
-	@$(GENKFS) $(SDK)debug.rom $(SDK)root/
+	@$(GENKFS) $(SDK)debug.rom $(SDK)root/ > /dev/null
 
 run: all
 	$(EMU) $(EMUFLAGS) $(SDK)debug.rom
