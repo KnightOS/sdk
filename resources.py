@@ -16,11 +16,12 @@ def get_resource_root():
         return path
     raise Exception("Unable to locate SDK resources")
 
-def read_template(name, project_name):
+def read_template(name, template_vars):
     template = None
     with open(os.path.join(get_resource_root(), "templates", name), 'r') as f:
         template = f.read()
-    template = template.replace("{{ project_name }}", project_name)
+    for key in template_vars.keys():
+        template = template.replace("{{ " + key + " }}", template_vars[key])
     return template
 
 def get_kernel():

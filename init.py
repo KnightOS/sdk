@@ -9,25 +9,31 @@ from knightos import prepare_environment
 from util import copytree, which
 from install import execute as cmd_install
 
-def execute(project_name=None, root=None):
+def execute(project_name=None, root=None, emulator=None, debugger=None, assembler=None):
     if root == None: root = os.getcwd()
     exists = setup_root(root, project_name)
     proj = Project(root)
     if exists and not project_name:
         project_name = proj.get_config("name")
         print("Found existing project: " + project_name)
+    template_vars = {
+        'project_name': project_name,
+        'assembler': assembler,
+        'emulator': emulator,
+        'debugger': debugger
+    };
     print("Installing SDK...")
-    proj.open(os.path.join(root, ".knightos", "sdk.make"), "w+").write(read_template("sdk.make", project_name))
-    proj.open(os.path.join(root, ".knightos", "variables.make"), "w+").write(read_template("variables.make", project_name))
+    proj.open(os.path.join(root, ".knightos", "sdk.make"), "w+").write(read_template("sdk.make", template_vars))
+    proj.open(os.path.join(root, ".knightos", "variables.make"), "w+").write(read_template("variables.make", template_vars))
     install_kernel(os.path.join(root, ".knightos"))
     shutil.move(os.path.join(root, ".knightos", "kernel.inc"), os.path.join(root, ".knightos", "include", "kernel.inc"))
     shutil.move(os.path.join(root, ".knightos", "kernel-TI84pSE.rom"), os.path.join(root, ".knightos", "kernel.rom"))
     if not exists:
         print("Installing templates...")
-        proj.open(os.path.join(root, ".gitignore"), "w+").write(read_template("gitignore", project_name))
-        proj.open(os.path.join(root, "main.asm"), "w+").write(read_template("main.asm", project_name))
-        proj.open(os.path.join(root, "Makefile"), "w+").write(read_template("Makefile", project_name))
-        proj.open(os.path.join(root, "package.config"), "w+").write(read_template("package.config", project_name))
+        proj.open(os.path.join(root, ".gitignore"), "w+").write(read_template("gitignore", template_vars))
+        proj.open(os.path.join(root, "main.asm"), "w+").write(read_template("main.asm", template_vars))
+        proj.open(os.path.join(root, "Makefile"), "w+").write(read_template("Makefile", template_vars))
+        proj.open(os.path.join(root, "package.config"), "w+").write(read_template("package.config", template_vars))
     default_packages = ["core/init"]
     cmd_install(default_packages, site_only=True)
     if which('git') != None:

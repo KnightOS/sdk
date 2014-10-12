@@ -13,10 +13,10 @@ all: $(ALL_TARGETS)
 	@$(GENKFS) $(SDK)debug.rom $(SDK)root/ > /dev/null
 
 run: all
-	$(EMU) $(EMUFLAGS) $(SDK)debug.rom
+	$(EMU) $(SDK)debug.rom
 
 debug: all
-	$(EMU) $(EMUFLAGS) --debug $(SDK)debug.rom
+	$(DEBUGGER) $(SDK)debug.rom
 
 clean:
 	@rm -rf $(OUT)

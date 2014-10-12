@@ -1,11 +1,11 @@
 # Project variables
 TARGET_MODEL:=TI84pSE
-AS:=sass
 SDK=.knightos/
 INCLUDE=$(SDK)include/;$(SDK)
+AS:={{ assembler }}
+EMU:={{ emulator }}
+DEBUGGER:={{ debugger }}
 ASFLAGS:=--encoding "Windows-1252" --include "$(INCLUDE)"
-EMU:=z80e-sdl
-EMUFLAGS:=-d TI84pSE
 GENKFS:=genkfs
 KPACK:=kpack
 .DEFAULT_GOAL=all
