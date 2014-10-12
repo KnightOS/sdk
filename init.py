@@ -4,6 +4,7 @@ import os
 from resources import read_template, get_resource_root, get_kernel, get_kernel_inc
 from project import Project
 from knightos import prepare_environment
+from install import execute as cmd_install
 
 def copytree(src, dst, symlinks=False, ignore=None): # shutil.copytree doesn't let you merge dirs
     if not os.path.exists(dst):
@@ -20,22 +21,21 @@ def copytree(src, dst, symlinks=False, ignore=None): # shutil.copytree doesn't l
 def execute(project_name, root=None):
     if root == None: root = os.getcwd()
     prepare_environment()
+    print("Preparing enviornment...")
     setup_root(root)
     proj = Project(root)
     proj.open(os.path.join(root, ".gitignore"), "w+").write(read_template("gitignore", project_name))
     proj.open(os.path.join(root, "main.asm"), "w+").write(read_template("main.asm", project_name))
     proj.open(os.path.join(root, "Makefile"), "w+").write(read_template("Makefile", project_name))
+    proj.open(os.path.join(root, "package.config"), "w+").write(read_template("package.config", project_name))
     proj.open(os.path.join(root, ".knightos", "sdk.make"), "w+").write(read_template("sdk.make", project_name))
     proj.open(os.path.join(root, ".knightos", "variables.make"), "w+").write(read_template("variables.make", project_name))
     shutil.copyfile(get_kernel(), os.path.join(root, ".knightos", "kernel.rom"))
     shutil.copyfile(get_kernel_inc(), os.path.join(root, ".knightos", "include", "kernel.inc"))
-    default_packages = ["base", "corelib"]
-    # Temporary - install a couple of required packages manually
-    for p in default_packages:
-        copytree(os.path.join(get_resource_root(), "templates", "temp", p), os.path.join(root, ".knightos", "pkgroot"))
-    if os.path.isdir(os.path.join(root, ".knightos", "pkgroot", "include")):
-        copytree(os.path.join(root, ".knightos", "pkgroot", "include"), os.path.join(root, ".knightos", "include"))
-    # End temporary
+    default_packages = ["core/init"]
+    print("Installing default packages...")
+    for package in default_packages:
+        cmd_install(package, site_only=True)
 
 def setup_root(root):
     os.makedirs(root, mode=0o755, exist_ok=True)
@@ -44,4 +44,5 @@ def setup_root(root):
         exit(1)
     os.makedirs(os.path.join(root, ".knightos"), mode=0o755)
     os.makedirs(os.path.join(root, ".knightos", "include"), mode=0o755)
+    os.makedirs(os.path.join(root, ".knightos", "packages"), mode=0o755)
     os.makedirs(os.path.join(root, ".knightos", "pkgroot"), mode=0o755)
