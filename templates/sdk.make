@@ -9,7 +9,7 @@ all: $(ALL_TARGETS)
 	@cp -r $(ROOT)* $(SDK)root/
 	@cp $(SDK)kernel.rom $(SDK)debug.rom
 	@mkdir -p $(SDK)root/etc
-	@echo "/bin/{{ project_name }}" > $(SDK)root/etc/inittab
+	@echo "$(INIT)" > $(SDK)root/etc/inittab
 	@$(GENKFS) $(SDK)debug.rom $(SDK)root/ > /dev/null
 
 run: all

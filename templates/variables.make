@@ -9,6 +9,7 @@ EMUFLAGS:=-d TI84pSE
 GENKFS:=genkfs
 KPACK:=kpack
 .DEFAULT_GOAL=all
+INIT:=/bin/{{ project_name }}
 
 OUT:=bin/
 ROOT:=$(OUT)root/
