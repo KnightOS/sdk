@@ -32,7 +32,8 @@ help:
 	@echo ""
 	@echo "Common targets:"
 	@echo "	all: 		Builds the entire project"
-	@echo "	run: 		Builds and runs the project in the debugger"
+	@echo "	run: 		Builds and runs the project in the emulator"
+	@echo "	debug: 		Builds and runs the project in the debugger"
 	@echo "	package:	Builds a KnightOS package"
 	@echo "	info:		Lists information about this project"
 
