@@ -32,9 +32,15 @@ class Project:
         lines = None
         with self.open("package.config") as c:
             lines = c.readlines()
+        found = False
         for i, line in enumerate(lines):
             if line.startswith(key):
                 lines[i] = key + '=' + value
+                found = True
+        if not found:
+            lines.append("{0}={1}".format(key, value))
+        if value == '':
+            lines = [l for l in lines if not l.startswith(key)]
         with self.open("package.config", mode="w") as c:
             c.write(''.join(lines))
 
