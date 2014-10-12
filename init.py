@@ -11,10 +11,7 @@ from install import execute as cmd_install
 
 def execute(project_name=None, root=None):
     if root == None: root = os.getcwd()
-    exists = setup_root(root)
-    if not exists and not project_name:
-        stderr.write("You must specify a project name for new projects.\n")
-        exit(1)
+    exists = setup_root(root, project_name)
     proj = Project(root)
     if exists and not project_name:
         project_name = proj.get_config("name")
@@ -40,13 +37,16 @@ def execute(project_name=None, root=None):
             subprocess.call(["git", "init", root], stdout=FNULL, stderr=subprocess.STDOUT)
     print("All done! You can use `make help` to find out what to do next.")
 
-def setup_root(root):
+def setup_root(root, project_name):
+    if os.path.exists(os.path.join(root, ".knightos")):
+        stderr.write("{path} not empty. Aborting.\n".format(path=os.path.relpath(root)))
+        exit(1)
     os.makedirs(root, mode=0o755, exist_ok=True)
     exists = False
     if len(os.listdir(root)) > 0:
         exists = True
-    if os.path.exists(os.path.join(root, ".knightos")):
-        stderr.write("{path} not empty. Aborting.\n".format(path=os.path.relpath(root)))
+    if not exists and not project_name:
+        stderr.write("You must specify a project name for new projects.\n")
         exit(1)
     os.makedirs(os.path.join(root, ".knightos"), mode=0o755)
     os.makedirs(os.path.join(root, ".knightos", "include"), mode=0o755)
