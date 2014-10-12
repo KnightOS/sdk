@@ -100,7 +100,6 @@ class Project:
             # Copy include files, if they exist
             if os.path.exists(os.path.join(self.root, ".knightos", "pkgroot", "include")):
                 copytree(os.path.join(self.root, ".knightos", "pkgroot", "include"), os.path.join(self.root, ".knightos", "include"))
-        print("Done!")
 
 def findroot():
     path = os.getcwd()

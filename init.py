@@ -1,5 +1,6 @@
 from sys import stderr, exit, stdout
 import shutil
+import subprocess
 import os
 import requests
 from resources import read_template, get_resource_root, get_kernel, get_kernel_inc
@@ -23,9 +24,11 @@ def execute(project_name, root=None):
     shutil.move(os.path.join(root, ".knightos", "kernel.inc"), os.path.join(root, ".knightos", "include", "kernel.inc"))
     shutil.move(os.path.join(root, ".knightos", "kernel-TI84pSE.rom"), os.path.join(root, ".knightos", "kernel.rom"))
     default_packages = ["core/init"]
-    print("Installing default packages...")
-    for package in default_packages:
-        cmd_install(package, site_only=True)
+    cmd_install(default_packages, site_only=True)
+    if shutil.which('git') != None:
+        print("Initializing new git repository...")
+        FNULL = open(os.devnull, 'w')
+        subprocess.call(["git", "init", root], stdout=FNULL, stderr=subprocess.STDOUT)
 
 def setup_root(root):
     os.makedirs(root, mode=0o755, exist_ok=True)

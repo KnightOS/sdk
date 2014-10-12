@@ -1,4 +1,4 @@
-PREFIX:=usr
+PREFIX:=/usr/
 .PHONY: install
 
 install:
