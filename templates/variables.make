@@ -17,3 +17,4 @@ BIN:=$(ROOT)bin/
 ETC:=$(ROOT)etc/
 VAR:=$(ROOT)var/
 SHARE:=$(ROOT)share/
+APPS:=$(VAR)applications/
