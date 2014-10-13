@@ -34,8 +34,18 @@ def execute(project_name=None, root=None, emulator=None, debugger=None, assemble
         proj.open(os.path.join(root, "main.asm"), "w+").write(read_template("main.asm", template_vars))
         proj.open(os.path.join(root, "Makefile"), "w+").write(read_template("Makefile", template_vars))
         proj.open(os.path.join(root, "package.config"), "w+").write(read_template("package.config", template_vars))
-    default_packages = ["core/init"]
-    cmd_install(default_packages, site_only=True)
+        default_packages = ["core/init"]
+        cmd_install(default_packages, site_only=True)
+    else:
+        print("Installing packages...")
+        packages = proj.get_config("dependencies")
+        if packages == None:
+            packages = ["core/init"]
+        else:
+            packages = packages.split(" ")
+            if not "core/init" in packages:
+                packages.append("core/init")
+        cmd_install(packages, site_only=True, init=True)
     if which('git') != None:
         if not os.path.exists(os.path.join(root, ".git")):
             print("Initializing new git repository...")

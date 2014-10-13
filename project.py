@@ -44,7 +44,7 @@ class Project:
         with self.open("package.config", mode="w") as c:
             c.write(''.join(lines))
 
-    def install(self, package, site_only):
+    def install(self, package, site_only, init=False):
         deps = self.get_config("dependencies")
         if deps == None:
             deps = list()
@@ -53,7 +53,7 @@ class Project:
         for i, dep in enumerate(deps):
             if ':' in dep:
                 deps[i] = dep.split(':')[0]
-        if package in deps:
+        if package in deps and not init:
             stderr.write("'{0}' is already installed, aborting.\n".format(package))
             exit(1)
         info = requests.get('https://packages.knightos.org/api/v1/' + package)
@@ -94,6 +94,7 @@ class Project:
             print("Installing {0}...".format(all_packages[i]))
             FNULL = open(os.devnull, 'w')
             ret = subprocess.call(['kpack', '-e', f, pkgroot], stdout=FNULL, stderr=subprocess.STDOUT)
+            ret = subprocess.call(['kpack', '-e', '-s', f, pkgroot], stdout=FNULL, stderr=subprocess.STDOUT)
             if ret != 0:
                 stderr.write("kpack returned status code {0}, aborting\n".format(ret))
                 exit(ret)
