@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from sys import stderr, exit, stdout
 import os
 
 default_emulator="z80e-sdl -d TI84pSE"
@@ -31,6 +32,7 @@ Options:
   --emulator=<emulator>     Specifies an alternate emulator. [default: {0}]
   --debugger=<debugger>     Specifies an alternate debugger. [default: {1}]
   --platform=<platform>     Specifies the calculator model to target. [default: TI84pSE]
+                            Supported platforms are: TI73, TI83p, TI83pSE, TI84p, TI84pSE, TI84pCSE
   -h --help                 Show this screen.
   --version                 Show version.
   
@@ -44,8 +46,13 @@ from query import execute as cmd_query
 
 args = docopt(doc, version="1.2.0")
 
+if args["--platform"]:
+    if not args["--platform"] in [ "TI73", "TI83p", "TI83pSE", "TI84p", "TI84pSE", "TI84pCSE" ]:
+        stderr.write("'{0}' is not a supported platform.\n".format(args["--platform"]))
+        exit(1)
+
 if args["init"]: cmd_init(project_name=args["<name>"], \
-        assembler=args["--assembler"], emulator=args["--emulator"], debugger=args["--debugger"], \
-        platform=args["--platform"])
+    assembler=args["--assembler"], emulator=args["--emulator"], debugger=args["--debugger"], \
+    platform=args["--platform"])
 if args["install"]: cmd_install(args["<packages>"], site_only=args["--site-only"])
 if args["query"]: cmd_query(args["<key>"])

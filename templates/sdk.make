@@ -22,6 +22,7 @@ clean:
 	@rm -rf $(OUT)
 	@rm -rf $(SDK)root
 	@rm -rf $(SDK)debug.rom
+	@rm -rf {{ project_name }}-$(VERSION).pkg
 
 package: all
 	kpack {{ project_name }}-$(VERSION).pkg $(BIN)
@@ -45,4 +46,4 @@ info:
 	@echo "Assembler:		$(AS)"
 	@echo "Emulator:		$(EMU)"
 	@echo "Include:		$(INCLUDE)"
-	@echo "Target Model:		$(TARGET_MODEL)"
+	@echo "Platform:		$(PLATFORM)"

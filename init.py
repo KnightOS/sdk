@@ -33,9 +33,9 @@ def execute(project_name=None, emulator=None, debugger=None, assembler=None, pla
     print("Installing SDK...")
     proj.open(os.path.join(root, ".knightos", "sdk.make"), "w+").write(read_template("sdk.make", template_vars))
     proj.open(os.path.join(root, ".knightos", "variables.make"), "w+").write(read_template("variables.make", template_vars))
-    install_kernel(os.path.join(root, ".knightos"))
+    install_kernel(os.path.join(root, ".knightos"), platform)
     shutil.move(os.path.join(root, ".knightos", "kernel.inc"), os.path.join(root, ".knightos", "include", "kernel.inc"))
-    shutil.move(os.path.join(root, ".knightos", "kernel-TI84pSE.rom"), os.path.join(root, ".knightos", "kernel.rom"))
+    shutil.move(os.path.join(root, ".knightos", "kernel-" + platform + ".rom"), os.path.join(root, ".knightos", "kernel.rom"))
 
     print("Installing templates...")
     if not os.path.exists(os.path.join(root, ".gitignore")):
@@ -80,12 +80,12 @@ def setup_root(root, project_name):
     os.makedirs(os.path.join(root, ".knightos", "pkgroot"), mode=0o755)
     return exists
 
-def install_kernel(root):
+def install_kernel(root, platform):
     release = get_latest_kernel()
     print("Installing kernel " + release['tag_name'])
     assets = list()
     assets.append([r for r in release['assets'] if r['name'] == 'kernel.inc'][0])
-    assets.append([r for r in release['assets'] if r['name'] == 'kernel-TI84pSE.rom'][0])
+    assets.append([r for r in release['assets'] if r['name'] == 'kernel-' + platform + '.rom'][0])
     for asset in assets:
         stdout.write("\rDownloading {0}...".format(asset['name']))
         r = requests.get(asset['browser_download_url'])
