@@ -22,5 +22,6 @@ BIN:=$(ROOT)bin/
 LIB:=$(ROOT)lib/
 ETC:=$(ROOT)etc/
 VAR:=$(ROOT)var/
+INCLUDE:=$(ROOT)include/
 SHARE:=$(ROOT)share/
 APPS:=$(VAR)applications/
