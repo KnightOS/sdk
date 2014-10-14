@@ -11,6 +11,7 @@ KPACK:=kpack
 INIT:=/bin/{{ project_name }}
 VERSION:=$(shell knightos query version)
 PLATFORM:={{ platform }}
+KEY:={{ key }}
 
 OUT:=bin/
 ROOT:=$(OUT)root/

@@ -6,5 +6,4 @@ from project import Project
 
 def execute(packages, site_only=False, init=False):
     project = Project()
-    for package in packages:
-        project.install(package, site_only, init=init)
+    project.install(packages, site_only, init=init)

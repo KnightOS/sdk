@@ -44,7 +44,7 @@ class Project:
         with self.open("package.config", mode="w") as c:
             c.write(''.join(lines))
 
-    def install(self, package, site_only, init=False):
+    def install(self, packages, site_only, init=False):
         deps = self.get_config("dependencies")
         if deps == None:
             deps = list()
@@ -53,21 +53,19 @@ class Project:
         for i, dep in enumerate(deps):
             if ':' in dep:
                 deps[i] = dep.split(':')[0]
-        if package in deps and not init:
-            stderr.write("'{0}' is already installed, aborting.\n".format(package))
-            exit(1)
-        info = requests.get('https://packages.knightos.org/api/v1/' + package)
-        if info.status_code == 404:
-            stderr.write("Cannot find '{0}' on packages.knightos.org.\n".format(package))
-            exit(1)
-        elif info.status_code != 200:
-            stderr.write("An error occured while contacting packages.knightos.org for information.\n")
-            exit(1)
-        extra = list()
-        for dep in info.json()['dependencies']:
-            if not dep in deps:
-                print("Adding dependency: " + dep)
-                extra.append(dep)
+        for package in packages:
+            info = requests.get('https://packages.knightos.org/api/v1/' + package)
+            if info.status_code == 404:
+                stderr.write("Cannot find '{0}' on packages.knightos.org.\n".format(package))
+                exit(1)
+            elif info.status_code != 200:
+                stderr.write("An error occured while contacting packages.knightos.org for information.\n")
+                exit(1)
+            extra = list()
+            for dep in info.json()['dependencies']:
+                if not dep in deps:
+                    print("Adding dependency: " + dep)
+                    extra.append(dep)
         files = []
         all_packages = extra + [package]
         # Download packages
@@ -86,7 +84,8 @@ class Project:
                     stdout.write("\rDownloading {:<20} {:<20}".format(p, str(int(length / total * 100)) + '%'))
             stdout.write("\n")
         if not site_only:
-            deps.append(package)
+            for package in packages:
+                deps.append(package)
         self.set_config("dependencies", " ".join(deps))
         # Install packages
         pkgroot = os.path.join(self.root, ".knightos", "pkgroot")

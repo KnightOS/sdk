@@ -5,7 +5,7 @@ import os
 import requests
 from resources import read_template, get_resource_root, get_kernel, get_kernel_inc
 from project import Project
-from knightos import prepare_environment
+from knightos import get_key
 from util import copytree, which
 from install import execute as cmd_install
 
@@ -28,7 +28,8 @@ def execute(project_name=None, emulator=None, debugger=None, assembler=None, pla
         'assembler': assembler,
         'emulator': emulator,
         'debugger': debugger,
-        'platform': platform
+        'platform': platform,
+        'key': '{:02X}'.format(get_key(platform))
     };
     print("Installing SDK...")
     proj.open(os.path.join(root, ".knightos", "sdk.make"), "w+").write(read_template("sdk.make", template_vars))
@@ -40,7 +41,7 @@ def execute(project_name=None, emulator=None, debugger=None, assembler=None, pla
     print("Installing templates...")
     if not os.path.exists(os.path.join(root, ".gitignore")):
         proj.open(os.path.join(root, ".gitignore"), "w+").write(read_template("gitignore", template_vars))
-    if not os.path.exists(os.path.join(root, "main.asm")):
+    if not exists:
         proj.open(os.path.join(root, "main.asm"), "w+").write(read_template("main.asm", template_vars))
     if not os.path.exists(os.path.join(root, "Makefile")):
         proj.open(os.path.join(root, "Makefile"), "w+").write(read_template("Makefile", template_vars))
