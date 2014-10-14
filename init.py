@@ -28,24 +28,26 @@ def execute(project_name=None, root=None, emulator=None, debugger=None, assemble
     install_kernel(os.path.join(root, ".knightos"))
     shutil.move(os.path.join(root, ".knightos", "kernel.inc"), os.path.join(root, ".knightos", "include", "kernel.inc"))
     shutil.move(os.path.join(root, ".knightos", "kernel-TI84pSE.rom"), os.path.join(root, ".knightos", "kernel.rom"))
-    if not exists:
-        print("Installing templates...")
+
+    print("Installing templates...")
+    if not os.path.exists(os.path.join(root, ".gitignore")):
         proj.open(os.path.join(root, ".gitignore"), "w+").write(read_template("gitignore", template_vars))
+    if not os.path.exists(os.path.join(root, "main.asm")):
         proj.open(os.path.join(root, "main.asm"), "w+").write(read_template("main.asm", template_vars))
+    if not os.path.exists(os.path.join(root, "Makefile")):
         proj.open(os.path.join(root, "Makefile"), "w+").write(read_template("Makefile", template_vars))
-        proj.open(os.path.join(root, "package.config"), "w+").write(read_template("package.config", template_vars))
-        default_packages = ["core/init"]
-        cmd_install(default_packages, site_only=True)
+    if not os.path.exists(os.path.join(root, "package.config")):
+        proj.open(os.path.join(root, "package.config")).write(read_template("package.config", template_vars))
+
+    print("Installing packages...")
+    packages = proj.get_config("dependencies")
+    if packages == None:
+        packages = ["core/init"]
     else:
-        print("Installing packages...")
-        packages = proj.get_config("dependencies")
-        if packages == None:
-            packages = ["core/init"]
-        else:
-            packages = packages.split(" ")
-            if not "core/init" in packages:
-                packages.append("core/init")
-        cmd_install(packages, site_only=True, init=True)
+        packages = packages.split(" ")
+        if not "core/init" in packages:
+            packages.append("core/init") # init is the only package that's actually required
+    cmd_install(packages, site_only=True, init=True)
     if which('git') != None:
         if not os.path.exists(os.path.join(root, ".git")):
             print("Initializing new git repository...")
@@ -55,8 +57,8 @@ def execute(project_name=None, root=None, emulator=None, debugger=None, assemble
 
 def setup_root(root, project_name):
     if os.path.exists(os.path.join(root, ".knightos")):
-        stderr.write("{path} not empty. Aborting.\n".format(path=os.path.relpath(root)))
-        exit(1)
+        shutil.rmtree(os.path.join(root, ".knightos"))
+        print("Notice: Rebuilding existing environment")
     os.makedirs(root, mode=0o755, exist_ok=True)
     exists = False
     if len(os.listdir(root)) > 0:
