@@ -30,7 +30,7 @@ clean:
 	@rm -rf {{ project_name }}-$(VERSION).pkg
 
 package: all
-	kpack {{ project_name }}-$(VERSION).pkg $(BIN)
+	kpack {{ project_name }}-$(VERSION).pkg $(ROOT)
 
 install: package
 	kpack -e -s {{ project_name }}-$(VERSION).pkg $(PREFIX)
