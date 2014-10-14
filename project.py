@@ -67,10 +67,14 @@ class Project:
                 exit(1)
             for dep in info.json()['dependencies']:
                 if not dep in extra and not dep in deps:
-                    print("Adding dependency: " + dep)
-                    extra.append(dep)
+                    if dep == self.full_name():
+                        print("Notice: this project fulfills the '{0}' dependency, skipping".format(dep))
+                    else:
+                        print("Adding dependency: " + dep)
+                        extra.append(dep)
         files = []
         all_packages = extra + packages
+        all_packages = [p for p in all_packages if p != self.full_name()]
         # Download packages
         for p in all_packages:
             stdout.write("\rDownloading {0}".format(p))
@@ -91,7 +95,6 @@ class Project:
                 deps.append(package)
         self.set_config("dependencies", " ".join(deps))
         # Remove the package we're working on, since it'll fulfill the dependency implicitly
-        packages = [p for p in packages if p != self.full_name()]
         # Install packages
         pkgroot = os.path.join(self.root, ".knightos", "pkgroot")
         for i, f in enumerate(files):
