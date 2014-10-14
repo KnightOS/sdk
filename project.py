@@ -67,7 +67,7 @@ class Project:
                     print("Adding dependency: " + dep)
                     extra.append(dep)
         files = []
-        all_packages = extra + [package]
+        all_packages = extra + packages
         # Download packages
         for p in all_packages:
             stdout.write("\rDownloading {0}".format(p))
