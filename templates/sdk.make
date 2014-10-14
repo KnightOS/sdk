@@ -23,11 +23,11 @@ clean:
 	@rm -rf $(SDK)root
 	@rm -rf $(SDK)debug.rom
 
-package:
-	kpack {{ project_name }}.pkg $(BIN)
+package: all
+	kpack {{ project_name }}-$(VERSION).pkg $(BIN)
 
 install: package
-	kpack -e -s {{ project_name }}.pkg $(PREFIX)
+	kpack -e -s {{ project_name }}-$(VERSION).pkg $(PREFIX)
 	
 help:
 	@echo "KnightOS Makefile for {{ project_name }}"

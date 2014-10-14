@@ -10,6 +10,7 @@ GENKFS:=genkfs
 KPACK:=kpack
 .DEFAULT_GOAL=all
 INIT:=/bin/{{ project_name }}
+VERSION:=$(shell knightos query version)
 
 OUT:=bin/
 ROOT:=$(OUT)root/
