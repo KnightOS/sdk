@@ -53,6 +53,7 @@ class Project:
         for i, dep in enumerate(deps):
             if ':' in dep:
                 deps[i] = dep.split(':')[0]
+        extra = list()
         for package in packages:
             info = requests.get('https://packages.knightos.org/api/v1/' + package)
             if info.status_code == 404:
@@ -61,9 +62,8 @@ class Project:
             elif info.status_code != 200:
                 stderr.write("An error occured while contacting packages.knightos.org for information.\n")
                 exit(1)
-            extra = list()
             for dep in info.json()['dependencies']:
-                if not dep in deps:
+                if not dep in extra and not dep in deps:
                     print("Adding dependency: " + dep)
                     extra.append(dep)
         files = []

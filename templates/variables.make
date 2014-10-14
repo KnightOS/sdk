@@ -12,6 +12,7 @@ INIT:=/bin/{{ project_name }}
 VERSION:=$(shell knightos query version)
 PLATFORM:={{ platform }}
 KEY:={{ key }}
+UPGRADEEXT:={{ upgrade_ext }}
 
 OUT:=bin/
 ROOT:=$(OUT)root/

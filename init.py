@@ -5,7 +5,7 @@ import os
 import requests
 from resources import read_template, get_resource_root, get_kernel, get_kernel_inc
 from project import Project
-from knightos import get_key
+from knightos import get_key, get_upgrade_ext
 from util import copytree, which
 from install import execute as cmd_install
 
@@ -29,7 +29,8 @@ def execute(project_name=None, emulator=None, debugger=None, assembler=None, pla
         'emulator': emulator,
         'debugger': debugger,
         'platform': platform,
-        'key': '{:02X}'.format(get_key(platform))
+        'key': '{:02X}'.format(get_key(platform)),
+        'upgrade_ext': get_upgrade_ext(platform)
     };
     print("Installing SDK...")
     proj.open(os.path.join(root, ".knightos", "sdk.make"), "w+").write(read_template("sdk.make", template_vars))
