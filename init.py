@@ -13,6 +13,7 @@ def execute(project_name=None, emulator=None, debugger=None, assembler=None, pla
     root = os.getcwd()
     exists = setup_root(root, project_name)
     proj = Project(root)
+    site_packages = []
     if exists and not project_name:
         project_name = proj.get_config("name")
         print("Found existing project: " + project_name)
@@ -23,6 +24,8 @@ def execute(project_name=None, emulator=None, debugger=None, assembler=None, pla
             emulator=proj.get_config("-sdk-debugger")
         if proj.get_config("-sdk-assembler"):
             emulator=proj.get_config("-sdk-assembler")
+        if proj.get_config("-sdk-site-packages"):
+            site_packages=proj.get_config("-sdk-site-packages").split(" ")
     template_vars = {
         'project_name': project_name,
         'assembler': assembler,
@@ -65,6 +68,9 @@ def execute(project_name=None, emulator=None, debugger=None, assembler=None, pla
         if not "core/init" in packages:
             packages.append("core/init") # init is the only package that's actually required
     cmd_install(packages, site_only=True, init=True)
+    if len(site_packages) != 0:
+        print("Installing site packages...")
+        cmd_install(site_packages, site_only=True, init=True)
     if which('git') != None:
         if not os.path.exists(os.path.join(root, ".git")):
             print("Initializing new git repository...")

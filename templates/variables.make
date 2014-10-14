@@ -19,6 +19,7 @@ FAT:={{ fat }}
 OUT:=bin/
 ROOT:=$(OUT)root/
 BIN:=$(ROOT)bin/
+LIB:=$(ROOT)lib/
 ETC:=$(ROOT)etc/
 VAR:=$(ROOT)var/
 SHARE:=$(ROOT)share/
