@@ -13,6 +13,9 @@ class Project:
     def __del__(self):
         pass
 
+    def full_name(self):
+        return self.get_config("repo") + "/" + self.get_config("name")
+
     def open(self, path, mode="r"):
         return open(os.path.join(self.root, path), mode=mode) # TODO: This leaks file descriptors
 
@@ -87,6 +90,8 @@ class Project:
             for package in packages:
                 deps.append(package)
         self.set_config("dependencies", " ".join(deps))
+        # Remove the package we're working on, since it'll fulfill the dependency implicitly
+        packages = [p for p in packages if p != self.full_name()]
         # Install packages
         pkgroot = os.path.join(self.root, ".knightos", "pkgroot")
         for i, f in enumerate(files):
