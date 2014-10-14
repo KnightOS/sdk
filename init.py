@@ -9,18 +9,26 @@ from knightos import prepare_environment
 from util import copytree, which
 from install import execute as cmd_install
 
-def execute(project_name=None, root=None, emulator=None, debugger=None, assembler=None):
-    if root == None: root = os.getcwd()
+def execute(project_name=None, emulator=None, debugger=None, assembler=None, platform=None):
+    root = os.getcwd()
     exists = setup_root(root, project_name)
     proj = Project(root)
     if exists and not project_name:
         project_name = proj.get_config("name")
         print("Found existing project: " + project_name)
+        # Grab project-specific options
+        if proj.get_config("-sdk-emulator"):
+            emulator=proj.get_config("-sdk-emulator")
+        if proj.get_config("-sdk-debugger"):
+            emulator=proj.get_config("-sdk-debugger")
+        if proj.get_config("-sdk-assembler"):
+            emulator=proj.get_config("-sdk-assembler")
     template_vars = {
         'project_name': project_name,
         'assembler': assembler,
         'emulator': emulator,
-        'debugger': debugger
+        'debugger': debugger,
+        'platform': platform
     };
     print("Installing SDK...")
     proj.open(os.path.join(root, ".knightos", "sdk.make"), "w+").write(read_template("sdk.make", template_vars))
@@ -37,7 +45,7 @@ def execute(project_name=None, root=None, emulator=None, debugger=None, assemble
     if not os.path.exists(os.path.join(root, "Makefile")):
         proj.open(os.path.join(root, "Makefile"), "w+").write(read_template("Makefile", template_vars))
     if not os.path.exists(os.path.join(root, "package.config")):
-        proj.open(os.path.join(root, "package.config")).write(read_template("package.config", template_vars))
+        proj.open(os.path.join(root, "package.config"), "w+").write(read_template("package.config", template_vars))
 
     print("Installing packages...")
     packages = proj.get_config("dependencies")

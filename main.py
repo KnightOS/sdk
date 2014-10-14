@@ -11,20 +11,26 @@ if os.name == 'nt': # Windows
 doc = """KnightOS SDK
 
 Usage:
-  knightos init [--emulator=<emulator>] [--assembler=<assembler>] [--debugger=<debugger>] [<name>] [<root>]
+  knightos init [<name>]
+        [--emulator=<emulator>]
+        [--assembler=<assembler>]
+        [--debugger=<debugger>]
+        [--platform=<platform>]
   knightos install [--site-only] <packages>...
-  knightos query <key> [<root>]
+  knightos query <key>
   knightos -h | --help
   knightos --version
 
 Options:
   init                      Initializes a new KnightOS project here or sets up an existing one
+                            [name] is required when creating new projects.
   install                   Installs the specified packages
   query                     Queries the project's package.config for <key>. Useful for automation.
   --site-only               Installs the package but does not add it to package.config
   --assembler=<assembler>   Specifies an alternate assembler. [default: sass]
   --emulator=<emulator>     Specifies an alternate emulator. [default: {0}]
   --debugger=<debugger>     Specifies an alternate debugger. [default: {1}]
+  --platform=<platform>     Specifies the calculator model to target. [default: TI84pSE]
   -h --help                 Show this screen.
   --version                 Show version.
   
@@ -38,7 +44,8 @@ from query import execute as cmd_query
 
 args = docopt(doc, version="1.2.0")
 
-if args["init"]: cmd_init(project_name=args["<name>"], root=args["<root>"], \
-        assembler=args["--assembler"], emulator=args["--emulator"], debugger=args["--debugger"])
+if args["init"]: cmd_init(project_name=args["<name>"], \
+        assembler=args["--assembler"], emulator=args["--emulator"], debugger=args["--debugger"], \
+        platform=args["--platform"])
 if args["install"]: cmd_install(args["<packages>"], site_only=args["--site-only"])
-if args["query"]: cmd_query(args["<key>"], root=args["<root>"])
+if args["query"]: cmd_query(args["<key>"])
