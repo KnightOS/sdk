@@ -4,7 +4,7 @@
 all: kernel $(ALL_TARGETS)
 	@rm -rf $(SDK)root
 	@mkdir -p $(SDK)root
-	@cp -r $(SDK)pkgroot/* $(SDK)root
+	@cp -r $(SDK)pkgroot/* $(SDK)root 2> /dev/null || true
 	@rm -rf $(SDK)root/include
 	@cp -r $(ROOT)* $(SDK)root/
 	@cp $(SDK)kernel.rom $(SDK)debug.rom
