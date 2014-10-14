@@ -13,6 +13,8 @@ VERSION:=$(shell knightos query version)
 PLATFORM:={{ platform }}
 KEY:={{ key }}
 UPGRADEEXT:={{ upgrade_ext }}
+PRIVILEGED:={{ privileged }}
+FAT:={{ fat }}
 
 OUT:=bin/
 ROOT:=$(OUT)root/

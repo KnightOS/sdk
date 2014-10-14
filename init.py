@@ -5,11 +5,11 @@ import os
 import requests
 from resources import read_template, get_resource_root, get_kernel, get_kernel_inc
 from project import Project
-from knightos import get_key, get_upgrade_ext
+from knightos import get_key, get_upgrade_ext, get_fat, get_privileged
 from util import copytree, which
 from install import execute as cmd_install
 
-def execute(project_name=None, emulator=None, debugger=None, assembler=None, platform=None):
+def execute(project_name=None, emulator=None, debugger=None, assembler=None, platform=None, kernel_source=None):
     root = os.getcwd()
     exists = setup_root(root, project_name)
     proj = Project(root)
@@ -30,14 +30,21 @@ def execute(project_name=None, emulator=None, debugger=None, assembler=None, pla
         'debugger': debugger,
         'platform': platform,
         'key': '{:02X}'.format(get_key(platform)),
-        'upgrade_ext': get_upgrade_ext(platform)
+        'upgrade_ext': get_upgrade_ext(platform),
+        'fat': '{:02X}'.format(get_fat(platform)),
+        'privileged': '{:02X}'.format(get_privileged(platform)),
+        'kernel_path': str(kernel_source)
     };
     print("Installing SDK...")
-    proj.open(os.path.join(root, ".knightos", "sdk.make"), "w+").write(read_template("sdk.make", template_vars))
+    if not kernel_source:
+        proj.open(os.path.join(root, ".knightos", "sdk.make"), "w+").write(read_template("sdk.make", template_vars))
+    else:
+        proj.open(os.path.join(root, ".knightos", "sdk.make"), "w+").write(read_template("sdk-custom-kernel.make", template_vars))
     proj.open(os.path.join(root, ".knightos", "variables.make"), "w+").write(read_template("variables.make", template_vars))
-    install_kernel(os.path.join(root, ".knightos"), platform)
-    shutil.move(os.path.join(root, ".knightos", "kernel.inc"), os.path.join(root, ".knightos", "include", "kernel.inc"))
-    shutil.move(os.path.join(root, ".knightos", "kernel-" + platform + ".rom"), os.path.join(root, ".knightos", "kernel.rom"))
+    if not kernel_source:
+        install_kernel(os.path.join(root, ".knightos"), platform)
+        shutil.move(os.path.join(root, ".knightos", "kernel.inc"), os.path.join(root, ".knightos", "include", "kernel.inc"))
+        shutil.move(os.path.join(root, ".knightos", "kernel-" + platform + ".rom"), os.path.join(root, ".knightos", "kernel.rom"))
 
     print("Installing templates...")
     if not os.path.exists(os.path.join(root, ".gitignore")):

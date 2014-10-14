@@ -17,6 +17,7 @@ Usage:
         [--assembler=<assembler>]
         [--debugger=<debugger>]
         [--platform=<platform>]
+        [--kernel-source=<path>]
   knightos install [--site-only] <packages>...
   knightos query <key>
   knightos -h | --help
@@ -33,6 +34,7 @@ Options:
   --debugger=<debugger>     Specifies an alternate debugger. [default: {1}]
   --platform=<platform>     Specifies the calculator model to target. [default: TI84pSE]
                             Supported platforms are: TI73, TI83p, TI83pSE, TI84p, TI84pSE, TI84pCSE
+  --kernel-source=<path>    Instead of downloading a kernel, compile one from <path>. Useful for testing kernels.
   -h --help                 Show this screen.
   --version                 Show version.
   
@@ -53,6 +55,6 @@ if args["--platform"]:
 
 if args["init"]: cmd_init(project_name=args["<name>"], \
     assembler=args["--assembler"], emulator=args["--emulator"], debugger=args["--debugger"], \
-    platform=args["--platform"])
+    platform=args["--platform"], kernel_source=args["--kernel-source"])
 if args["install"]: cmd_install(args["<packages>"], site_only=args["--site-only"])
 if args["query"]: cmd_query(args["<key>"])
