@@ -38,10 +38,10 @@ class Project:
         found = False
         for i, line in enumerate(lines):
             if line.startswith(key):
-                lines[i] = key + '=' + value
+                lines[i] = key + '=' + value + "\n"
                 found = True
         if not found:
-            lines.append("{0}={1}".format(key, value))
+            lines.append("{0}={1}\n".format(key, value))
         if value == '':
             lines = [l for l in lines if not l.startswith(key)]
         with self.open("package.config", mode="w") as c:
