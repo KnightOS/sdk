@@ -99,12 +99,19 @@ class Project:
         pkgroot = os.path.join(self.root, ".knightos", "pkgroot")
         for i, f in enumerate(files):
             print("Installing {0}...".format(all_packages[i]))
-            FNULL = open(os.devnull, 'w')
-            ret = subprocess.call(['kpack', '-e', f, pkgroot], stdout=FNULL, stderr=subprocess.STDOUT)
-            ret = subprocess.call(['kpack', '-e', '-s', f, pkgroot], stdout=FNULL, stderr=subprocess.STDOUT)
-            if ret != 0:
-                stderr.write("kpack returned status code {0}, aborting\n".format(ret))
-                exit(ret)
+            try:
+                FNULL = open(os.devnull, 'w')
+                ret = subprocess.call(['kpack', '-e', f, pkgroot], stdout=FNULL, stderr=subprocess.STDOUT)
+                ret = subprocess.call(['kpack', '-e', '-s', f, pkgroot], stdout=FNULL, stderr=subprocess.STDOUT)
+                if ret != 0:
+                    stderr.write("kpack returned status code {0}, aborting\n".format(ret))
+                    exit(ret)
+            except ex:
+                ret = subprocess.call(['kpack', '-e', f, pkgroot])
+                ret = subprocess.call(['kpack', '-e', '-s', f, pkgroot])
+                if ret != 0:
+                    stderr.write("kpack returned status code {0}, aborting\n".format(ret))
+                    exit(ret)
             # Copy include files, if they exist
             if os.path.exists(os.path.join(self.root, ".knightos", "pkgroot", "include")):
                 copytree(os.path.join(self.root, ".knightos", "pkgroot", "include"), os.path.join(self.root, ".knightos", "include"))
