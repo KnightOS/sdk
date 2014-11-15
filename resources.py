@@ -26,6 +26,3 @@ def read_template(name, template_vars):
 
 def get_kernel():
     return os.path.join(get_resource_root(), "kernel", "kernel-ti84pSE.rom")
-
-def get_kernel_inc():
-    return os.path.join(get_resource_root(), "kernel", "kernel.inc")

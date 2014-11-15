@@ -3,7 +3,7 @@ import shutil
 import subprocess
 import os
 import requests
-from resources import read_template, get_resource_root, get_kernel, get_kernel_inc
+from resources import read_template, get_resource_root, get_kernel
 from project import Project
 from knightos import get_key, get_upgrade_ext, get_fat, get_privileged
 from util import copytree, which
@@ -57,7 +57,6 @@ def init_assembly(proj, root, exists, site_packages, template_vars):
     proj.open(os.path.join(root, ".knightos", "variables.make"), "w+").write(read_template("assembly/variables.make", template_vars))
     if template_vars['kernel_path'] == 'None':
         install_kernel(os.path.join(root, ".knightos"), template_vars['platform'])
-        shutil.move(os.path.join(root, ".knightos", "kernel.inc"), os.path.join(root, ".knightos", "include", "kernel.inc"))
         shutil.move(os.path.join(root, ".knightos", "kernel-" + template_vars['platform'] + ".rom"), os.path.join(root, ".knightos", "kernel.rom"))
 
     print("Installing templates...")
@@ -73,11 +72,14 @@ def init_assembly(proj, root, exists, site_packages, template_vars):
     print("Installing packages...")
     packages = proj.get_config("dependencies")
     if packages == None:
-        packages = ["core/init"]
+        packages = ["core/kernel-headers", "core/init"]
     else:
         packages = packages.split(" ")
+        # Required packages
+        if not "core/kernel-headers" in packages:
+            packages.append("core/kernel-headers")
         if not "core/init" in packages:
-            packages.append("core/init") # init is the only package that's actually required
+            packages.append("core/init")
     cmd_install(packages, site_only=True, init=True)
     if len(site_packages) != 0:
         print("Installing site packages...")
@@ -95,7 +97,6 @@ def init_c(proj, root, exists, site_packages, template_vars):
     proj.open(os.path.join(root, ".knightos", "sdk.make"), "w+").write(read_template("c/sdk.make", template_vars))
     proj.open(os.path.join(root, ".knightos", "variables.make"), "w+").write(read_template("c/variables.make", template_vars))
     install_kernel(os.path.join(root, ".knightos"), template_vars['platform'])
-    shutil.move(os.path.join(root, ".knightos", "kernel.inc"), os.path.join(root, ".knightos", "include", "kernel.inc"))
     shutil.move(os.path.join(root, ".knightos", "kernel-" + template_vars['platform'] + ".rom"), os.path.join(root, ".knightos", "kernel.rom"))
 
     print("Installing templates...")
@@ -113,11 +114,14 @@ def init_c(proj, root, exists, site_packages, template_vars):
     print("Installing packages...")
     packages = proj.get_config("dependencies")
     if packages == None:
-        packages = ["core/init"]
+        packages = ["core/kernel-headers", "core/init"]
     else:
         packages = packages.split(" ")
+        # Required packages
+        if not "core/kernel-headers" in packages:
+            packages.append("core/kernel-headers")
         if not "core/init" in packages:
-            packages.append("core/init") # init is the only package that's actually required
+            packages.append("core/init")
     cmd_install(packages, site_only=True, init=True)
     if len(site_packages) != 0:
         print("Installing site packages...")
@@ -150,7 +154,6 @@ def install_kernel(root, platform):
     release = get_latest_kernel()
     print("Installing kernel " + release['tag_name'])
     assets = list()
-    assets.append([r for r in release['assets'] if r['name'] == 'kernel.inc'][0])
     assets.append([r for r in release['assets'] if r['name'] == 'kernel-' + platform + '.rom'][0])
     for asset in assets:
         stdout.write("\rDownloading {0}...".format(asset['name']))
