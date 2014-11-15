@@ -5,9 +5,9 @@
 void main(void) {
 	SCREEN *screen;
 	get_lcd_lock();
-	screen = create_screen();
-	clear_buffer(screen);
-	draw_str(screen, 0, 0, "Hello world!");
-	fast_copy(screen);
+	screen = screen_allocate();
+	screen_clear(screen);
+	draw_string(screen, 0, 0, "Hello world!");
+	screen_draw(screen);
 	while (1);
 }
