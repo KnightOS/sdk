@@ -11,7 +11,7 @@ $(OUT)%.o: $(OUT)%.asm
 
 $(OUT)%.asm: %.c $(HEADERS)
 	mkdir -p $(OUT)
-	kcc -I"$(INCLUDE)" -I./ -S --std-c99 $< -o $@
+	kcc -I.knightos/include/ -I./ -S --std-c99 $< -o $@
 
 all: $(ALL_TARGETS)
 	@rm -rf $(SDK)root
