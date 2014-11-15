@@ -9,7 +9,7 @@ from knightos import get_key, get_upgrade_ext, get_fat, get_privileged
 from util import copytree, which
 from install import execute as cmd_install
 
-def execute(project_name=None, emulator=None, debugger=None, assembler=None, platform=None, kernel_source=None):
+def execute(project_name=None, emulator=None, debugger=None, assembler=None, platform=None, kernel_source=None, compiler=None, language=None):
     root = os.getcwd()
     exists = setup_root(root, project_name)
     proj = Project(root)
@@ -24,11 +24,16 @@ def execute(project_name=None, emulator=None, debugger=None, assembler=None, pla
             emulator=proj.get_config("-sdk-debugger")
         if proj.get_config("-sdk-assembler"):
             emulator=proj.get_config("-sdk-assembler")
+        if proj.get_config("-sdk-compiler"):
+            compiler=proj.get_config("-sdk-compiler")
+        if proj.get_config("-sdk-language"):
+            compiler=proj.get_config("-sdk-language")
         if proj.get_config("-sdk-site-packages"):
             site_packages=proj.get_config("-sdk-site-packages").split(" ")
     template_vars = {
         'project_name': project_name,
         'assembler': assembler,
+        'compiler': compiler,
         'emulator': emulator,
         'debugger': debugger,
         'platform': platform,
@@ -38,26 +43,29 @@ def execute(project_name=None, emulator=None, debugger=None, assembler=None, pla
         'privileged': '{:02X}'.format(get_privileged(platform)),
         'kernel_path': str(kernel_source)
     };
+    init_assembly(proj, root, exists, site_packages, template_vars)
+
+def init_assembly(proj, root, exists, site_packages, template_vars):
     print("Installing SDK...")
-    if not kernel_source:
-        proj.open(os.path.join(root, ".knightos", "sdk.make"), "w+").write(read_template("sdk.make", template_vars))
+    if template_vars['kernel_path'] == 'None':
+        proj.open(os.path.join(root, ".knightos", "sdk.make"), "w+").write(read_template("assembly/sdk.make", template_vars))
     else:
-        proj.open(os.path.join(root, ".knightos", "sdk.make"), "w+").write(read_template("sdk-custom-kernel.make", template_vars))
-    proj.open(os.path.join(root, ".knightos", "variables.make"), "w+").write(read_template("variables.make", template_vars))
-    if not kernel_source:
-        install_kernel(os.path.join(root, ".knightos"), platform)
+        proj.open(os.path.join(root, ".knightos", "sdk.make"), "w+").write(read_template("assembly/sdk-custom-kernel.make", template_vars))
+    proj.open(os.path.join(root, ".knightos", "variables.make"), "w+").write(read_template("assembly/variables.make", template_vars))
+    if template_vars['kernel_path'] == 'None':
+        install_kernel(os.path.join(root, ".knightos"), template_vars['platform'])
         shutil.move(os.path.join(root, ".knightos", "kernel.inc"), os.path.join(root, ".knightos", "include", "kernel.inc"))
-        shutil.move(os.path.join(root, ".knightos", "kernel-" + platform + ".rom"), os.path.join(root, ".knightos", "kernel.rom"))
+        shutil.move(os.path.join(root, ".knightos", "kernel-" + template_vars['platform'] + ".rom"), os.path.join(root, ".knightos", "kernel.rom"))
 
     print("Installing templates...")
     if not os.path.exists(os.path.join(root, ".gitignore")):
-        proj.open(os.path.join(root, ".gitignore"), "w+").write(read_template("gitignore", template_vars))
+        proj.open(os.path.join(root, ".gitignore"), "w+").write(read_template("assembly/gitignore", template_vars))
     if not exists:
-        proj.open(os.path.join(root, "main.asm"), "w+").write(read_template("main.asm", template_vars))
+        proj.open(os.path.join(root, "main.asm"), "w+").write(read_template("assembly/main.asm", template_vars))
     if not os.path.exists(os.path.join(root, "Makefile")):
-        proj.open(os.path.join(root, "Makefile"), "w+").write(read_template("Makefile", template_vars))
+        proj.open(os.path.join(root, "Makefile"), "w+").write(read_template("assembly/Makefile", template_vars))
     if not os.path.exists(os.path.join(root, "package.config")):
-        proj.open(os.path.join(root, "package.config"), "w+").write(read_template("package.config", template_vars))
+        proj.open(os.path.join(root, "package.config"), "w+").write(read_template("assembly/package.config", template_vars))
 
     print("Installing packages...")
     packages = proj.get_config("dependencies")
