@@ -27,7 +27,7 @@ def execute(project_name=None, emulator=None, debugger=None, assembler=None, pla
         if proj.get_config("-sdk-compiler"):
             compiler=proj.get_config("-sdk-compiler")
         if proj.get_config("-sdk-language"):
-            compiler=proj.get_config("-sdk-language")
+            language=proj.get_config("-sdk-language")
         if proj.get_config("-sdk-site-packages"):
             site_packages=proj.get_config("-sdk-site-packages").split(" ")
     template_vars = {
@@ -43,7 +43,10 @@ def execute(project_name=None, emulator=None, debugger=None, assembler=None, pla
         'privileged': '{:02X}'.format(get_privileged(platform)),
         'kernel_path': str(kernel_source)
     };
-    init_assembly(proj, root, exists, site_packages, template_vars)
+    if language == 'assembly':
+        init_assembly(proj, root, exists, site_packages, template_vars)
+    else:
+        init_c(proj, root, exists, site_packages, template_vars)
 
 def init_assembly(proj, root, exists, site_packages, template_vars):
     print("Installing SDK...")
@@ -66,6 +69,46 @@ def init_assembly(proj, root, exists, site_packages, template_vars):
         proj.open(os.path.join(root, "Makefile"), "w+").write(read_template("assembly/Makefile", template_vars))
     if not os.path.exists(os.path.join(root, "package.config")):
         proj.open(os.path.join(root, "package.config"), "w+").write(read_template("assembly/package.config", template_vars))
+
+    print("Installing packages...")
+    packages = proj.get_config("dependencies")
+    if packages == None:
+        packages = ["core/init"]
+    else:
+        packages = packages.split(" ")
+        if not "core/init" in packages:
+            packages.append("core/init") # init is the only package that's actually required
+    cmd_install(packages, site_only=True, init=True)
+    if len(site_packages) != 0:
+        print("Installing site packages...")
+        cmd_install(site_packages, site_only=True, init=True)
+    if which('git') != None:
+        if not os.path.exists(os.path.join(root, ".git")):
+            print("Initializing new git repository...")
+            FNULL = open(os.devnull, 'w')
+            subprocess.call(["git", "init", root], stdout=FNULL, stderr=subprocess.STDOUT)
+    print("All done! You can use `make help` to find out what to do next.")
+
+def init_c(proj, root, exists, site_packages, template_vars):
+    template_vars['assembler'] = 'scas' # Temporary
+    print("Installing SDK...")
+    proj.open(os.path.join(root, ".knightos", "sdk.make"), "w+").write(read_template("c/sdk.make", template_vars))
+    proj.open(os.path.join(root, ".knightos", "variables.make"), "w+").write(read_template("c/variables.make", template_vars))
+    install_kernel(os.path.join(root, ".knightos"), template_vars['platform'])
+    shutil.move(os.path.join(root, ".knightos", "kernel.inc"), os.path.join(root, ".knightos", "include", "kernel.inc"))
+    shutil.move(os.path.join(root, ".knightos", "kernel-" + template_vars['platform'] + ".rom"), os.path.join(root, ".knightos", "kernel.rom"))
+
+    print("Installing templates...")
+    if not os.path.exists(os.path.join(root, ".gitignore")):
+        proj.open(os.path.join(root, ".gitignore"), "w+").write(read_template("c/gitignore", template_vars))
+    if not exists:
+        proj.open(os.path.join(root, "main.c"), "w+").write(read_template("c/main.c", template_vars))
+    if not exists:
+        proj.open(os.path.join(root, "crt0.asm"), "w+").write(read_template("c/crt0.asm", template_vars))
+    if not os.path.exists(os.path.join(root, "Makefile")):
+        proj.open(os.path.join(root, "Makefile"), "w+").write(read_template("c/Makefile", template_vars))
+    if not os.path.exists(os.path.join(root, "package.config")):
+        proj.open(os.path.join(root, "package.config"), "w+").write(read_template("c/package.config", template_vars))
 
     print("Installing packages...")
     packages = proj.get_config("dependencies")

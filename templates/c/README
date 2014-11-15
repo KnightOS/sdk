@@ -1,0 +1,51 @@
+This is a bunch of template files that need to be copied around on 
+
+    $ knightos init project_name
+
+The procedure for doing an init is this:
+
+1. mkdir .knightos .knightos/include .knightos/pkgroot
+2. Copy a KnightOS kernel to .knightos/kernel.rom
+3. Copy a KnightOS kernel include to .knightos/include/kernel.inc
+4. Copy these files into the project:
+    - main.asm
+    - Makefile
+    - package.config
+    - gitignore -> .gitignore (only if git is installed)
+    - sdk.make -> .knightos/sdk.make
+    - variables.make -> .knightos/variables.make
+5. Replace all instances of {{ project_name }} in text files in the project dir
+   with the project name
+6. TEMPORARY WORKAROUND: Copy packages into .knightos/pkgroot
+   For each package in the temp folder, copy its contents into .knightos/pkgroot
+   Then copy the contents of .knightos/pkgroot/include/ to .knightos/include/
+
+Questions:
+
+Q: Where do I get a kernel.rom?
+A: https://github.com/KnightOS/kernel/releases (query this via github api)
+
+Q: What is each file for?
+A: - main.asm is the entry point for the user's new program
+   - Makefile is the makefile, but most of it is removed to other files to keep
+     it clean
+   - package.config is the kpack-compatible package manifest, which is also used
+     by the SDK to track dependencies (in the future)
+   - gitignore is self explanatory
+   - sdk.make is all the SDK-specific make targets (i.e. make run)
+   - variables.make is variables like $(AS) and $(EMU)
+   - .knightos has a number of things in it:
+     - Installed packages
+     - A kernel for testing
+     - A rootfs with all your dependencies installed (.knightos/pkgroot/)
+     - Your test rootfs with all your deps AND your own program itself (this is
+       generated at .knightos/root when you `make`)
+     - Your test kernel with your test rootfs baked in (.knightos/debug.rom)
+
+Q: What does all of this do, anyway?
+A: It sets up a new project with a few useful makefile targets:
+   - `make info` compiles your stuff
+   - `make help` gives some helpful usage information
+   - `make run` will build a ROM file with your program in /etc/inittab and all
+     of your dependencies installed, then run it
+   - TODO `make package` bundles up your program with kpack
