@@ -3,15 +3,15 @@
 
 $(OUT)crt0.o: crt0.asm
 	mkdir -p $(OUT)
-	scas -I"$(INCLUDE)" -O -o $(OUT)crt0.o crt0.asm
+	$(AS) -I"$(INCLUDE)" -O -o $(OUT)crt0.o crt0.asm
 
 $(OUT)%.o: $(OUT)%.asm
 	mkdir -p $(OUT)
-	scas -I"$(INCLUDE)" -O -o $@ $<
+	$(AS) -I"$(INCLUDE)" -O -o $@ $<
 
 $(OUT)%.asm: %.c $(HEADERS)
 	mkdir -p $(OUT)
-	kcc -I.knightos/include/ -I./ -S --std-c99 $< -o $@
+	$(CC) -I.knightos/include/ -I./ -S --std-c99 $< -o $@
 
 all: $(ALL_TARGETS)
 	@rm -rf $(SDK)root
