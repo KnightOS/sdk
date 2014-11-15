@@ -9,4 +9,5 @@ void main(void) {
 	clear_buffer(screen);
 	draw_str(screen, 0, 0, "Hello world!");
 	fast_copy(screen);
+	while (1);
 }
