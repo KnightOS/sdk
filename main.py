@@ -16,7 +16,7 @@ Usage:
         [--emulator=<emulator>]
         [--assembler=<assembler>]
         [--compiler=<compiler>]
-        [--language=<language>]
+        [--template=<template>]
         [--debugger=<debugger>]
         [--platform=<platform>]
         [--vcs=<vcs>]
@@ -34,7 +34,7 @@ Options:
   --site-only               Installs the package but does not add it to package.config
   --assembler=<assembler>   Specifies an alternate assembler. [default: sass]
   --compiler=<compiler>     Specifies an alternate C compiler. [default: kcc]
-  --language=<language>     Specifies an alternate project language. [default: assembly]
+  --template=<template>     Specifies a template. [default: assembly]
   --emulator=<emulator>     Specifies an alternate emulator. [default: {0}]
   --debugger=<debugger>     Specifies an alternate debugger. [default: {1}]
   --platform=<platform>     Specifies the calculator model to target. [default: TI84pSE]
@@ -63,6 +63,6 @@ if args["--platform"]:
 if args["init"]: cmd_init(project_name=args["<name>"], \
     assembler=args["--assembler"], emulator=args["--emulator"], debugger=args["--debugger"], \
     platform=args["--platform"], vcs=args["--vcs"], kernel_source=args["--kernel-source"],
-    compiler=args["--compiler"], language=args["--language"])
+    compiler=args["--compiler"], template=args["--template"])
 if args["install"]: cmd_install(args["<packages>"], site_only=args["--site-only"])
 if args["query"]: cmd_query(args["<key>"])

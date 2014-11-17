@@ -16,13 +16,5 @@ def get_resource_root():
         return path
     raise Exception("Unable to locate SDK resources")
 
-def read_template(name, template_vars):
-    template = None
-    with open(os.path.join(get_resource_root(), "templates", name), 'r') as f:
-        template = f.read()
-    for key in template_vars.keys():
-        template = template.replace("{{ " + key + " }}", template_vars[key])
-    return template
-
 def get_kernel():
     return os.path.join(get_resource_root(), "kernel", "kernel-ti84pSE.rom")
