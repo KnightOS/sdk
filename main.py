@@ -19,6 +19,7 @@ Usage:
         [--language=<language>]
         [--debugger=<debugger>]
         [--platform=<platform>]
+        [--vcs=<vcs>]
         [--kernel-source=<path>]
   knightos install [--site-only] <packages>...
   knightos query <key>
@@ -38,10 +39,12 @@ Options:
   --debugger=<debugger>     Specifies an alternate debugger. [default: {1}]
   --platform=<platform>     Specifies the calculator model to target. [default: TI84pSE]
                             Supported platforms are: TI73, TI83p, TI83pSE, TI84p, TI84pSE, TI84pCSE
+  --vcs=<vcs>               Specifies an alternate version control system. [default: git]
+                            Supported systems are: git, hg
   --kernel-source=<path>    Instead of downloading a kernel, compile one from <path>. Useful for testing kernels.
   -h --help                 Show this screen.
   --version                 Show version.
-  
+
 
 """.format(default_emulator, default_debugger)
 
@@ -59,7 +62,7 @@ if args["--platform"]:
 
 if args["init"]: cmd_init(project_name=args["<name>"], \
     assembler=args["--assembler"], emulator=args["--emulator"], debugger=args["--debugger"], \
-    platform=args["--platform"], kernel_source=args["--kernel-source"],
+    platform=args["--platform"], vcs=args["--vcs"], kernel_source=args["--kernel-source"],
     compiler=args["--compiler"], language=args["--language"])
 if args["install"]: cmd_install(args["<packages>"], site_only=args["--site-only"])
 if args["query"]: cmd_query(args["<key>"])

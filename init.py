@@ -9,7 +9,7 @@ from knightos import get_key, get_upgrade_ext, get_fat, get_privileged
 from util import copytree, which
 from install import execute as cmd_install
 
-def execute(project_name=None, emulator=None, debugger=None, assembler=None, platform=None, kernel_source=None, compiler=None, language=None):
+def execute(project_name=None, emulator=None, debugger=None, assembler=None, platform=None, vcs=None, kernel_source=None, compiler=None, language=None):
     root = os.getcwd()
     exists = setup_root(root, project_name)
     proj = Project(root)
@@ -42,13 +42,13 @@ def execute(project_name=None, emulator=None, debugger=None, assembler=None, pla
         'fat': '{:02X}'.format(get_fat(platform)),
         'privileged': '{:02X}'.format(get_privileged(platform)),
         'kernel_path': str(kernel_source)
-    };
+    }
     if language == 'assembly':
-        init_assembly(proj, root, exists, site_packages, template_vars)
+        init_assembly(proj, root, exists, site_packages, template_vars, vcs)
     else:
-        init_c(proj, root, exists, site_packages, template_vars)
+        init_c(proj, root, exists, site_packages, template_vars, vcs)
 
-def init_assembly(proj, root, exists, site_packages, template_vars):
+def init_assembly(proj, root, exists, site_packages, template_vars, vcs):
     print("Installing SDK...")
     if template_vars['kernel_path'] == 'None':
         proj.open(os.path.join(root, ".knightos", "sdk.make"), "w+").write(read_template("assembly/sdk.make", template_vars))
@@ -84,14 +84,17 @@ def init_assembly(proj, root, exists, site_packages, template_vars):
     if len(site_packages) != 0:
         print("Installing site packages...")
         cmd_install(site_packages, site_only=True, init=True)
-    if which('git') != None:
+    if which('git') != None and vcs == "git":
         if not os.path.exists(os.path.join(root, ".git")):
             print("Initializing new git repository...")
-            FNULL = open(os.devnull, 'w')
-            subprocess.call(["git", "init", root], stdout=FNULL, stderr=subprocess.STDOUT)
+            subprocess.call(["git", "init", root], stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
+    elif which('hg') != None and vcs == "hg":
+        if not os.path.exists(os.path.join(root, ".hg")):
+            print("Initializing new hg repository...")
+            subprocess.call(["hg", "init", root], stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
     print("All done! You can use `make help` to find out what to do next.")
 
-def init_c(proj, root, exists, site_packages, template_vars):
+def init_c(proj, root, exists, site_packages, template_vars, vcs):
     template_vars['assembler'] = 'scas' # Temporary
     print("Installing SDK...")
     proj.open(os.path.join(root, ".knightos", "sdk.make"), "w+").write(read_template("c/sdk.make", template_vars))
@@ -126,11 +129,14 @@ def init_c(proj, root, exists, site_packages, template_vars):
     if len(site_packages) != 0:
         print("Installing site packages...")
         cmd_install(site_packages, site_only=True, init=True)
-    if which('git') != None:
+    if which('git') != None and vcs == "git":
         if not os.path.exists(os.path.join(root, ".git")):
             print("Initializing new git repository...")
-            FNULL = open(os.devnull, 'w')
-            subprocess.call(["git", "init", root], stdout=FNULL, stderr=subprocess.STDOUT)
+            subprocess.call(["git", "init", root], stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
+    elif which('hg') != None and vcs == "hg":
+        if not os.path.exists(os.path.join(root, ".hg")):
+            print("Initializing new hg repository...")
+            subprocess.call(["hg", "init", root], stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
     print("All done! You can use `make help` to find out what to do next.")
 
 def setup_root(root, project_name):
