@@ -106,7 +106,7 @@ class Project:
                 if ret != 0:
                     stderr.write("kpack returned status code {0}, aborting\n".format(ret))
                     exit(ret)
-            except ex:
+            except:
                 ret = subprocess.call(['kpack', '-e', f, pkgroot])
                 ret = subprocess.call(['kpack', '-e', '-s', f, pkgroot])
                 if ret != 0:
