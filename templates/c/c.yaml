@@ -1,5 +1,5 @@
-name: assembly
-description: A basic KnightOS userspace program (in assembly)
+name: c
+description: A basic KnightOS userspace program (in C)
 files:
   - template: package.config
     path: package.config
@@ -13,14 +13,14 @@ files:
   - template: variables.make
     path: .knightos/variables.make
 
-  - template: main.asm
-    path: main.asm
-
-  - template: sdk-custom-kernel.make
-    path: .knightos/sdk.make
+  - template: main.c
+    path: main.c
 
   - template: gitignore
     path: .gitignore
+
+  - template: crt0.asm
+    path: crt0.asm
 
 requires: [ 'sass', 'kpack', 'genkfs', 'make' ]
 install: [ 'core/init', 'core/kernel-headers' ]
