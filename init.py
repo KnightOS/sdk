@@ -80,11 +80,11 @@ def init(proj, root, exists, site_packages, template, template_vars, vcs):
     if len(site_packages) != 0:
         print("Installing site packages...")
         cmd_install(site_packages, site_only=True, init=True)
-    if which('git') != None and vcs == "git":
+    if which('git') and vcs == "git":
         if not os.path.exists(os.path.join(root, ".git")):
             print("Initializing new git repository...")
             subprocess.call(["git", "init", root], stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
-    elif which('hg') != None and vcs == "hg":
+    elif which('hg') and vcs == "hg":
         if not os.path.exists(os.path.join(root, ".hg")):
             print("Initializing new hg repository...")
             subprocess.call(["hg", "init", root], stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)

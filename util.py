@@ -19,9 +19,8 @@ def copytree(src, dst, symlinks=False, ignore=None): # shutil.copytree doesn't l
 # Replacement for shutil.which, which wasn't introduced until python 3.3
 def which(filename):
     locations = os.environ.get("PATH").split(os.pathsep)
-    candidates = []
     for location in locations:
         candidate = os.path.join(location, filename)
         if os.path.isfile(candidate):
-            candidates.append(candidate)
-    return candidates
+            return True
+    return False
