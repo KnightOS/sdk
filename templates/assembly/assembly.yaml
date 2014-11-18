@@ -1,0 +1,26 @@
+name: assembly
+description: A basic KnightOS userspace program (in assembly)
+files:
+  - template: package.config
+    path: package.config
+
+  - template: Makefile
+    path: Makefile
+
+  - template: sdk.make
+    path: .knightos/sdk.make
+
+  - template: variables.make
+    path: .knightos/variables.make
+
+  - template: main.asm
+    path: main.asm
+
+  - template: sdk-custom-kernel.make
+    path: .knightos/sdk.make
+
+  - template: gitignore
+    path: .gitignore
+
+requires: [ 'sass', 'kpack', 'genkfs', 'make' ]
+install: [ 'core/init', 'core/kernel-headers' ]
