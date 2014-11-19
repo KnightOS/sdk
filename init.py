@@ -48,7 +48,7 @@ def execute(project_name=None, emulator=None, debugger=None, assembler=None, pla
 
 def init(proj, root, exists, site_packages, template, template_vars, vcs):
     print("Installing SDK...")
-    if template_vars['kernel_path'] == 'None':
+    if template_vars['kernel_path'] == None:
         install_kernel(os.path.join(root, ".knightos"), template_vars['platform'])
         shutil.move(os.path.join(root, ".knightos", "kernel-" + template_vars['platform'] + ".rom"), os.path.join(root, ".knightos", "kernel.rom"))
 
@@ -65,6 +65,8 @@ def init(proj, root, exists, site_packages, template, template_vars, vcs):
 
     print("Installing packages...")
     packages = proj.get_config("dependencies")
+    if not packages:
+        packages = list()
     for i in template["install"]:
         if not i in packages:
             packages.append(i)

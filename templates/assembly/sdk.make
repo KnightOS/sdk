@@ -1,7 +1,7 @@
 # KnightOS SDK targets
 .PHONY: all run clean help info package
 
-all: $(ALL_TARGETS)
+all: $(ALL_TARGETS) {{#kernel_path}}kernel{{/kernel_path}}
 	@rm -rf $(SDK)root
 	@mkdir -p $(SDK)root
 	@cp -r $(SDK)pkgroot/* $(SDK)root 2> /dev/null || true
@@ -11,6 +11,13 @@ all: $(ALL_TARGETS)
 	@mkdir -p $(SDK)root/etc
 	@echo "$(INIT)" > $(SDK)root/etc/inittab
 	@$(GENKFS) $(SDK)debug.rom $(SDK)root/ > /dev/null
+
+{{#kernel_path}}
+kernel:
+	cd {{ kernel_path }} && make $(PLATFORM)
+	cp {{ kernel_path }}/bin/kernel.inc $(SDK)include/
+	cp {{ kernel_path }}/bin/$(PLATFORM)/kernel.rom $(SDK)kernel.rom
+{{/kernel_path}}
 
 run: all
 	$(EMU) $(SDK)debug.rom

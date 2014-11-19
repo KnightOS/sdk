@@ -16,9 +16,6 @@ files:
   - template: main.asm
     path: main.asm
 
-  - template: sdk-custom-kernel.make
-    path: .knightos/sdk.make
-
   - template: gitignore
     path: .gitignore
 
