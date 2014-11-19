@@ -42,7 +42,7 @@ def execute(project_name=None, emulator=None, debugger=None, assembler=None, pla
         'upgrade_ext': get_upgrade_ext(platform),
         'fat': '{:02X}'.format(get_fat(platform)),
         'privileged': '{:02X}'.format(get_privileged(platform)),
-        'kernel_path': str(kernel_source)
+        'kernel_path': kernel_source
     }
     init(proj, root, exists, site_packages, template_yaml, template_vars, vcs)
 
@@ -61,18 +61,10 @@ def init(proj, root, exists, site_packages, template, template_vars, vcs):
             file = open(os.path.join(root, i["path"]), "w")
             file.write(pystache.render(ofile.read(), template_vars))
 
-    #TODO: add requires field support
+    # TODO: Check for software listed in template['requries']
 
     print("Installing packages...")
     packages = proj.get_config("dependencies")
-    if packages == None:
-        packages = ["core/kernel-headers", "core/init"]
-    else:
-        # Required packages
-        if not "core/kernel-headers" in packages:
-            packages.append("core/kernel-headers")
-        if not "core/init" in packages:
-            packages.append("core/init")
     for i in template["install"]:
         if not i in packages:
             packages.append(i)
