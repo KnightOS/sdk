@@ -95,6 +95,9 @@ def setup_root(root, project_name):
     if not exists and not project_name:
         stderr.write("You must specify a project name for new projects.\n")
         exit(1)
+    if exists and not os.path.exists(os.path.join(root, "package.config")):
+        stderr.write("This directory is not empty and does not appear to have a KnightOS project, aborting!\n")
+        exit(1)
     os.makedirs(os.path.join(root, ".knightos"), mode=0o755)
     os.makedirs(os.path.join(root, ".knightos", "include"), mode=0o755)
     os.makedirs(os.path.join(root, ".knightos", "packages"), mode=0o755)
