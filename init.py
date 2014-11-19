@@ -67,6 +67,8 @@ def init(proj, root, exists, site_packages, template, template_vars, vcs):
     packages = proj.get_config("dependencies")
     if not packages:
         packages = list()
+    else:
+        packages = packages.split(' ')
     for i in template["install"]:
         if not i in packages:
             packages.append(i)
