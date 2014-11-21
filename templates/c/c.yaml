@@ -30,4 +30,4 @@ files:
     reinit: False
 
 requires: [ 'sass', 'kpack', 'genkfs', 'make' ]
-install: [ 'core/init', 'core/kernel-headers' ]
+install: [ 'core/init', 'core/kernel-headers', 'extra/libc' ]

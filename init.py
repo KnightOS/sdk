@@ -32,6 +32,8 @@ def execute(project_name=None, emulator=None, debugger=None, assembler=None, pla
             template=proj.get_config("-sdk-template")
         if proj.get_config("-sdk-site-packages"):
             site_packages=proj.get_config("-sdk-site-packages").split(" ")
+    if template == "c":
+        assembler = "scas" # temporary
     template_yaml = yaml.load(open(os.path.join(get_resource_root(), "templates", template, template+".yaml"), 'r'))
     template_vars = {
         'project_name': project_name,
