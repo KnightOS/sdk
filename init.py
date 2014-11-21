@@ -57,11 +57,11 @@ def init(proj, root, exists, site_packages, template, template_vars, vcs):
     print("Installing template...")
     for i in template["files"]:
         if not os.path.exists(os.path.join(root, i["path"])):
-            ofile = open(os.path.join(get_resource_root(), "templates", template["name"], i["template"]), "r")
-            if ofile == "sdk-custom-kernel.make" and template_vars['kernel_path'] == 'None': pass
-            if ofile == "gitignore" and vcs != "git": pass
-            file = open(os.path.join(root, i["path"]), "w")
-            file.write(pystache.render(ofile.read(), template_vars))
+            if not exists or (exists and i["reinit"]):
+                ofile = open(os.path.join(get_resource_root(), "templates", template["name"], i["template"]), "r")
+                if ofile == "gitignore" and vcs != "git": pass
+                file = open(os.path.join(root, i["path"]), "w")
+                file.write(pystache.render(ofile.read(), template_vars))
 
     # TODO: Check for software listed in template['requries']
 

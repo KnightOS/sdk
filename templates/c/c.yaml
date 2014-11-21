@@ -3,24 +3,31 @@ description: A basic KnightOS userspace program (in C)
 files:
   - template: package.config
     path: package.config
+    reinit: False
 
   - template: Makefile
     path: Makefile
+    reinit: False
 
   - template: sdk.make
     path: .knightos/sdk.make
+    reinit: True
 
   - template: variables.make
     path: .knightos/variables.make
+    reinit: True
 
   - template: main.c
     path: main.c
+    reinit: False
 
   - template: gitignore
     path: .gitignore
+    reinit: False
 
   - template: crt0.asm
     path: crt0.asm
+    reinit: False
 
 requires: [ 'sass', 'kpack', 'genkfs', 'make' ]
 install: [ 'core/init', 'core/kernel-headers' ]
