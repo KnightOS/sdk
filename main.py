@@ -21,6 +21,7 @@ Usage:
         [--platform=<platform>]
         [--vcs=<vcs>]
         [--kernel-source=<path>]
+        [--force]
   knightos install [--site-only] <packages>...
   knightos query <key>
   knightos -h | --help
@@ -42,6 +43,7 @@ Options:
   --vcs=<vcs>               Specifies an alternate version control system. [default: git]
                             Supported systems are: git, hg
   --kernel-source=<path>    Instead of downloading a kernel, compile one from <path>. Useful for testing kernels.
+  --force                   Installs the SDK in this directory even if not empty
   -h --help                 Show this screen.
   --version                 Show version.
 
@@ -63,6 +65,6 @@ if args["--platform"]:
 if args["init"]: cmd_init(project_name=args["<name>"], \
     assembler=args["--assembler"], emulator=args["--emulator"], debugger=args["--debugger"], \
     platform=args["--platform"], vcs=args["--vcs"], kernel_source=args["--kernel-source"],
-    compiler=args["--compiler"], template=args["--template"])
+    compiler=args["--compiler"], template=args["--template"], force=args["--force"])
 if args["install"]: cmd_install(args["<packages>"], site_only=args["--site-only"])
 if args["query"]: cmd_query(args["<key>"])

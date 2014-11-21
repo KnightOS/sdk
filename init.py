@@ -11,9 +11,9 @@ from knightos import get_key, get_upgrade_ext, get_fat, get_privileged
 from util import copytree, which
 from install import execute as cmd_install
 
-def execute(project_name=None, emulator=None, debugger=None, assembler=None, platform=None, vcs=None, kernel_source=None, compiler=None, template=None):
+def execute(project_name=None, emulator=None, debugger=None, assembler=None, platform=None, vcs=None, kernel_source=None, compiler=None, template=None, force=None):
     root = os.getcwd()
-    exists = setup_root(root, project_name)
+    exists = setup_root(root, project_name, force)
     proj = Project(root)
     site_packages = []
     if exists and not project_name:
@@ -46,9 +46,9 @@ def execute(project_name=None, emulator=None, debugger=None, assembler=None, pla
         'privileged': '{:02X}'.format(get_privileged(platform)),
         'kernel_path': kernel_source
     }
-    init(proj, root, exists, site_packages, template_yaml, template_vars, vcs)
+    init(proj, root, exists, site_packages, template_yaml, template_vars, vcs, force)
 
-def init(proj, root, exists, site_packages, template, template_vars, vcs):
+def init(proj, root, exists, site_packages, template, template_vars, vcs, force):
     print("Installing SDK...")
     if template_vars['kernel_path'] == None:
         install_kernel(os.path.join(root, ".knightos"), template_vars['platform'])
@@ -88,7 +88,7 @@ def init(proj, root, exists, site_packages, template, template_vars, vcs):
             subprocess.call(["hg", "init", root], stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
     print("All done! You can use `make help` to find out what to do next.")
 
-def setup_root(root, project_name):
+def setup_root(root, project_name, force):
     if os.path.exists(os.path.join(root, ".knightos")):
         shutil.rmtree(os.path.join(root, ".knightos"))
         print("Notice: Rebuilding existing environment")
@@ -100,8 +100,11 @@ def setup_root(root, project_name):
         stderr.write("You must specify a project name for new projects.\n")
         exit(1)
     if exists and not os.path.exists(os.path.join(root, "package.config")):
-        stderr.write("This directory is not empty and does not appear to have a KnightOS project, aborting!\n")
-        exit(1)
+        if not force:
+            stderr.write("This directory is not empty and does not appear to have a KnightOS project, aborting!\n")
+            exit(1)
+        else:
+            stderr.write("Warning: forcibly installing SDK in populated directory\n")
     os.makedirs(os.path.join(root, ".knightos"), mode=0o755)
     os.makedirs(os.path.join(root, ".knightos", "include"), mode=0o755)
     os.makedirs(os.path.join(root, ".knightos", "packages"), mode=0o755)
