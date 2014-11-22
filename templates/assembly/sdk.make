@@ -15,7 +15,7 @@ all: $(ALL_TARGETS) {{#kernel_path}}kernel{{/kernel_path}}
 {{#kernel_path}}
 kernel:
 	cd {{ kernel_path }} && make $(PLATFORM)
-	cp {{ kernel_path }}/include/kernel.inc $(SDK)include/
+	cp {{ kernel_path }}/bin/include/kernel.inc $(SDK)include/
 	cp {{ kernel_path }}/bin/$(PLATFORM)/kernel.rom $(SDK)kernel.rom
 {{/kernel_path}}
 
