@@ -1,5 +1,5 @@
 # KnightOS SDK targets
-.PHONY: all run clean help info package
+.PHONY: all run clean help info package{{#kernel_path}} kernel{{/kernel_path}}
 
 all: $(ALL_TARGETS) {{#kernel_path}}kernel{{/kernel_path}}
 	@rm -rf $(SDK)root
