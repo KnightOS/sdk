@@ -2,8 +2,8 @@
 from sys import stderr, exit, stdout
 import os
 
-default_emulator="z80e-sdl -d TI84pSE"
-default_debugger="z80e-sdl -d TI84pSE --debug"
+default_emulator="z80e-sdl"
+default_debugger="z80e-sdl --debug"
 
 if os.name == 'nt': # Windows
         default_emulator="wabbitemu"
@@ -61,6 +61,7 @@ if args["--platform"]:
     if not args["--platform"] in [ "TI73", "TI83p", "TI83pSE", "TI84p", "TI84pSE", "TI84pCSE" ]:
         stderr.write("'{0}' is not a supported platform.\n".format(args["--platform"]))
         exit(1)
+    args["--debugger"] += " -d " + args["--platform"]
 
 if args["init"]: cmd_init(project_name=args["<name>"], \
     assembler=args["--assembler"], emulator=args["--emulator"], debugger=args["--debugger"], \
