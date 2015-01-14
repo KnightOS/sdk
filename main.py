@@ -62,8 +62,9 @@ if args["--platform"]:
     if not args["--platform"] in [ "TI73", "TI83p", "TI83pSE", "TI84p", "TI84pSE", "TI84pCSE" ]:
         stderr.write("'{0}' is not a supported platform.\n".format(args["--platform"]))
         exit(1)
-    args["--emulator"] += " -d " + args["--platform"]
-    args["--debugger"] += " -d " + args["--platform"]
+    if args["--emulator"] == 'z80e-sdl':
+        args["--emulator"] += " -d " + args["--platform"]
+        args["--debugger"] += " -d " + args["--platform"]
 
 if args["init"]: cmd_init(project_name=args["<name>"], \
     assembler=args["--assembler"], emulator=args["--emulator"], debugger=args["--debugger"], \
