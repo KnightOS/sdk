@@ -1,9 +1,9 @@
 # KnightOS SDK targets
 include $(SDK)packages.make
 
-.PHONY: all run clean help info dependencies package{{#kernel_path}} kernel{{/kernel_path}}
+.PHONY: all run clean help info dependencies includes package{{#kernel_path}} kernel{{/kernel_path}}
 
-all: dependencies includes $(ALL_TARGETS) {{#kernel_path}}kernel{{/kernel_path}}
+all: {{#kernel_path}}kernel{{/kernel_path}} dependencies includes $(ALL_TARGETS)
 	@rm -rf $(SDK)root
 	@mkdir -p $(SDK)root
 	@cp -r $(SDK)pkgroot/* $(SDK)root 2> /dev/null || true

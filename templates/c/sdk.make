@@ -1,5 +1,7 @@
 # KnightOS SDK targets
-.PHONY: all run clean help info package
+include $(SDK)packages.make
+
+.PHONY: all run clean help info package includes dependencies
 
 $(OUT)crt0.o: crt0.asm
 	mkdir -p $(OUT)
@@ -13,7 +15,7 @@ $(OUT)%.asm: %.c $(HEADERS)
 	mkdir -p $(OUT)
 	$(CC) -I.knightos/include/ -I./ -S --std-c99 $< -o $@
 
-all: $(ALL_TARGETS)
+all: dependencies includes $(ALL_TARGETS)
 	@rm -rf $(SDK)root
 	@mkdir -p $(SDK)root
 	@cp -r $(SDK)pkgroot/* $(SDK)root 2> /dev/null || true
@@ -23,6 +25,9 @@ all: $(ALL_TARGETS)
 	@mkdir -p $(SDK)root/etc
 	@echo "$(INIT)" > $(SDK)root/etc/inittab
 	@$(GENKFS) $(SDK)debug.rom $(SDK)root/ > /dev/null
+
+includes:
+	@-cp -r $(SDK)pkgroot/include/* $(SDK)include/
 
 run: all
 	$(EMU) $(SDK)debug.rom

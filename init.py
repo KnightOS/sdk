@@ -65,6 +65,8 @@ def init(proj, root, exists, site_packages, template, template_vars, vcs, force)
     for i in template["install"]:
         if not i in packages:
             packages.append(i)
+    if "core/kernel-headers" in packages and template_vars['kernel_path']:
+        packages.remove("core/kernel-headers")
     template_vars['packages'] = cmd_install(packages, site_only=True, init=True)
     if len(site_packages) != 0:
         print("Installing site packages...")
