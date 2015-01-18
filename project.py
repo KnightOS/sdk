@@ -4,6 +4,10 @@ from util import copytree
 import os
 import requests
 import subprocess
+import pystache
+import kpack
+
+from resources import get_resource_root
 
 class Project:
     def __init__(self, root=None):
@@ -14,15 +18,22 @@ class Project:
         pass
 
     def full_name(self):
-        return self.get_config("repo") + "/" + self.get_config("name")
+        repo = self.get_config("repo")
+        name = self.get_config("name")
+        if not repo or not name:
+            return None
+        return repo + "/" + name
 
     def open(self, path, mode="r"):
         return open(os.path.join(self.root, path), mode=mode) # TODO: This leaks file descriptors
 
     def get_config(self, key):
         lines = None
-        with self.open("package.config") as c:
-            lines = c.readlines()
+        try:
+            with self.open("package.config") as c:
+                lines = c.readlines()
+        except:
+            return None
         for line in lines:
             if line.startswith(key):
                 try:
@@ -47,7 +58,7 @@ class Project:
         with self.open("package.config", mode="w") as c:
             c.write(''.join(lines))
 
-    def install(self, packages, site_only, init=False):
+    def get_packages(self):
         deps = self.get_config("dependencies")
         if deps == None:
             deps = list()
@@ -56,6 +67,9 @@ class Project:
         for i, dep in enumerate(deps):
             if ':' in dep:
                 deps[i] = dep.split(':')[0]
+        return deps
+
+    def get_implicit_packages(self, packages):
         extra = list()
         for package in packages:
             info = requests.get('https://packages.knightos.org/api/v1/' + package)
@@ -66,15 +80,31 @@ class Project:
                 stderr.write("An error occured while contacting packages.knightos.org for information.\n")
                 exit(1)
             for dep in info.json()['dependencies']:
-                if not dep in extra and not dep in deps:
+                if not dep in extra and not dep in self.get_packages():
                     if dep == self.full_name():
                         print("Notice: this project fulfills the '{0}' dependency, skipping".format(dep))
                     else:
                         print("Adding dependency: " + dep)
                         extra.append(dep)
-        files = []
+        return extra
+
+    def gen_package_make(self):
+        template_vars = { "packages": list() }
+        for root, dirs, files in os.walk(os.path.join(self.root, ".knightos", "packages")):
+            for package in files:
+                info = kpack.PackageInfo.read_package(os.path.join(self.root, ".knightos", "packages", package))
+                template_vars["packages"].append({ "name": info.name, "repo": info.repo, "filename": package })
+        with open(os.path.join(get_resource_root(), "templates", "packages.make"), "r") as ofile:
+            path = os.path.join(self.root, ".knightos", "packages.make")
+            with open(os.path.join(path), "w") as file:
+                file.write(pystache.render(ofile.read(), template_vars))
+
+    def install(self, packages, site_only, init=False):
+        deps = self.get_packages()
+        extra = self.get_implicit_packages(packages)
         all_packages = extra + packages
         all_packages = [p for p in all_packages if p != self.full_name()]
+        files = []
         # Download packages
         for p in all_packages:
             stdout.write("\rDownloading {0}".format(p))
@@ -93,28 +123,11 @@ class Project:
         if not site_only:
             for package in packages:
                 deps.append(package)
-        self.set_config("dependencies", " ".join(deps))
-        # Remove the package we're working on, since it'll fulfill the dependency implicitly
+        if not init:
+            self.set_config("dependencies", " ".join(deps))
         # Install packages
-        pkgroot = os.path.join(self.root, ".knightos", "pkgroot")
-        for i, f in enumerate(files):
-            print("Installing {0}...".format(all_packages[i]))
-            try:
-                FNULL = open(os.devnull, 'w')
-                ret = subprocess.call(['kpack', '-e', f, pkgroot], stdout=FNULL, stderr=subprocess.STDOUT)
-                ret = subprocess.call(['kpack', '-e', '-s', f, pkgroot], stdout=FNULL, stderr=subprocess.STDOUT)
-                if ret != 0:
-                    stderr.write("kpack returned status code {0}, aborting\n".format(ret))
-                    exit(ret)
-            except:
-                ret = subprocess.call(['kpack', '-e', f, pkgroot])
-                ret = subprocess.call(['kpack', '-e', '-s', f, pkgroot])
-                if ret != 0:
-                    stderr.write("kpack returned status code {0}, aborting\n".format(ret))
-                    exit(ret)
-            # Copy include files, if they exist
-            if os.path.exists(os.path.join(self.root, ".knightos", "pkgroot", "include")):
-                copytree(os.path.join(self.root, ".knightos", "pkgroot", "include"), os.path.join(self.root, ".knightos", "include"))
+        self.gen_package_make()
+        return all_packages
 
 def findroot():
     path = os.getcwd()

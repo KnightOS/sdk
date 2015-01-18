@@ -56,17 +56,6 @@ def init(proj, root, exists, site_packages, template, template_vars, vcs, force)
         install_kernel(os.path.join(root, ".knightos"), template_vars['platform'])
         shutil.move(os.path.join(root, ".knightos", "kernel-" + template_vars['platform'] + ".rom"), os.path.join(root, ".knightos", "kernel.rom"))
 
-    print("Installing template...")
-    for i in template["files"]:
-        if not os.path.exists(os.path.join(root, i["path"])):
-            if not exists or (exists and i["reinit"]):
-                ofile = open(os.path.join(get_resource_root(), "templates", template["name"], i["template"]), "r")
-                if ofile == "gitignore" and vcs != "git": pass
-                file = open(os.path.join(root, i["path"]), "w")
-                file.write(pystache.render(ofile.read(), template_vars))
-
-    # TODO: Check for software listed in template['requries']
-
     print("Installing packages...")
     packages = proj.get_config("dependencies")
     if not packages:
@@ -76,7 +65,7 @@ def init(proj, root, exists, site_packages, template, template_vars, vcs, force)
     for i in template["install"]:
         if not i in packages:
             packages.append(i)
-    cmd_install(packages, site_only=True, init=True)
+    template_vars['packages'] = cmd_install(packages, site_only=True, init=True)
     if len(site_packages) != 0:
         print("Installing site packages...")
         cmd_install(site_packages, site_only=True, init=True)
@@ -88,6 +77,18 @@ def init(proj, root, exists, site_packages, template, template_vars, vcs, force)
         if not os.path.exists(os.path.join(root, ".hg")):
             print("Initializing new hg repository...")
             subprocess.call(["hg", "init", root], stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
+
+    print("Installing template...")
+    for i in template["files"]:
+        if not os.path.exists(os.path.join(root, i["path"])):
+            if not exists or (exists and i["reinit"]):
+                ofile = open(os.path.join(get_resource_root(), "templates", template["name"], i["template"]), "r")
+                if ofile == "gitignore" and vcs != "git": pass
+                file = open(os.path.join(root, i["path"]), "w")
+                file.write(pystache.render(ofile.read(), template_vars))
+
+    # TODO: Check for software listed in template['requries']
+
     print("All done! You can use `make help` to find out what to do next.")
 
 def setup_root(root, project_name, force):
