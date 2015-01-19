@@ -2,6 +2,7 @@ from sys import exit, stderr, stdout
 from util import copytree
 
 import os
+import re
 import requests
 import subprocess
 import pystache
@@ -27,10 +28,10 @@ class Project:
     def open(self, path, mode="r"):
         return open(os.path.join(self.root, path), mode=mode) # TODO: This leaks file descriptors
 
-    def get_config(self, key):
+    def get_config(self, key, config="package.config"):
         lines = None
         try:
-            with self.open("package.config") as c:
+            with self.open(config) as c:
                 lines = c.readlines()
         except:
             return None
@@ -42,9 +43,9 @@ class Project:
                     pass
         return None
 
-    def set_config(self, key, value):
+    def set_config(self, key, value, config="package.config"):
         lines = None
-        with self.open("package.config") as c:
+        with self.open(config) as c:
             lines = c.readlines()
         found = False
         for i, line in enumerate(lines):
@@ -100,6 +101,10 @@ class Project:
                 file.write(pystache.render(ofile.read(), template_vars))
 
     def install(self, packages, site_only, init=False):
+        if len(packages) == 0 and os.path.exists(os.path.join(packages[0], "package.config")):
+            # TODO: Install local package
+            pass
+
         deps = self.get_packages()
         extra = self.get_implicit_packages(packages)
         all_packages = extra + packages
