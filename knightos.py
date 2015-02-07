@@ -16,7 +16,7 @@ def get_upgrade_ext(platform):
 
 def get_privileged(platform):
     if platform == "TI73": return 0x1C
-    if platform == "TI83p": return 0x3C
+    if platform == "TI83p": return 0x1C
     if platform == "TI83pSE": return 0x7C
     if platform == "TI84p": return 0x3C
     if platform == "TI84pSE": return 0x7C
