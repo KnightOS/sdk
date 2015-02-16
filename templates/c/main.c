@@ -1,6 +1,6 @@
 #include <display.h>
 
-/* Warning! C support in KnightOS is highly experimental. Your milage may vary. */
+/* Warning! C support in KnightOS is highly experimental. Your mileage may vary. */
 
 void main(void) {
 	SCREEN *screen;
