@@ -8,5 +8,6 @@ dependencies: {{#packages}}__dependency__/{{repo}}/{{name}} {{/packages}}
 __dependency__/{{repo}}/{{name}}:
 	@kpack -e $(SDK)packages/{{filename}} $(SDK)pkgroot/ > /dev/null
 	@kpack -e -s $(SDK)packages/{{filename}} $(SDK)pkgroot/ > /dev/null
+	@cp -r $(SDK)pkgroot/include/* $(SDK)include/ ||:
 
 {{/packages}}
