@@ -112,7 +112,7 @@ class Project:
         files = []
         # Download packages
         for p in all_packages:
-            stdout.write("\rDownloading {0}".format(p))
+            stdout.write("Downloading {0}".format(p))
             r = requests.get('https://packages.knightos.org/api/v1/' + p)
             path = os.path.join(self.root, ".knightos", "packages", "{0}-{1}.pkg".format(r.json()['name'], r.json()['version']))
             files.append(path)
@@ -123,7 +123,8 @@ class Project:
                 for chunk in _r.iter_content(1024):
                     fd.write(chunk)
                     length += len(chunk)
-                    stdout.write("\rDownloading {:<20} {:<20}".format(p, str(int(length / total * 100)) + '%'))
+                    if stdout.isatty():
+                        stdout.write("\rDownloading {:<20} {:<20}".format(p, str(int(length / total * 100)) + '%'))
             stdout.write("\n")
         if not site_only:
             for package in packages:

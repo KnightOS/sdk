@@ -123,7 +123,7 @@ def install_kernel(root, platform):
     assets = list()
     assets.append([r for r in release['assets'] if r['name'] == 'kernel-' + platform + '.rom'][0])
     for asset in assets:
-        stdout.write("\rDownloading {0}...".format(asset['name']))
+        stdout.write("Downloading {0}...".format(asset['name']))
         r = requests.get(asset['browser_download_url'])
         total = int(r.headers.get('content-length'))
         length = 0
@@ -131,7 +131,8 @@ def install_kernel(root, platform):
             for chunk in r.iter_content(1024):
                 fd.write(chunk)
                 length += len(chunk)
-                stdout.write("\rDownloading {:<20} {:<20}".format(asset['name'], str(int(length / total * 100)) + '%'))
+                if stdout.isatty():
+                    stdout.write("\rDownloading {:<20} {:<20}".format(asset['name'], str(int(length / total * 100)) + '%'))
         stdout.write("\n")
     with open(os.path.join(root, 'kernel-version'), 'w') as f:
         f.write(release['tag_name'])
