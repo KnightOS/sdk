@@ -6,9 +6,9 @@ include $(SDK)packages.make
 all: {{#kernel_path}}kernel{{/kernel_path}} dependencies includes $(ALL_TARGETS)
 	@rm -rf $(SDK)root
 	@mkdir -p $(SDK)root
-	@cp -r $(SDK)pkgroot/* $(SDK)root 2> /dev/null || true
+	@cp -R $(SDK)pkgroot/* $(SDK)root 2> /dev/null || true
 	@rm -rf $(SDK)root/include
-	@cp -r $(ROOT)* $(SDK)root/
+	@cp -R $(ROOT)* $(SDK)root/
 	@cp $(SDK)kernel.rom $(SDK)debug.rom
 	@mkdir -p $(SDK)root/etc
 	@echo "$(INIT)" > $(SDK)root/etc/inittab
