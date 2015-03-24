@@ -1,7 +1,4 @@
 import subprocess
-import locale
-
-encoding = locale.getdefaultlocale()[1]
 
 class PackageInfo():
     name = None
@@ -18,7 +15,7 @@ class PackageInfo():
     @staticmethod
     def read_package(path):
         process = subprocess.Popen(['kpack', '-i', path], stdout=subprocess.PIPE)
-        output = process.communicate()[0].decode(encoding)
+        output = process.communicate()[0].decode("ascii")
         result = PackageInfo()
         for line in output.splitlines():
             if not line.strip():
