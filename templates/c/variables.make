@@ -17,7 +17,7 @@ UPGRADEEXT:={{ upgrade_ext }}
 PRIVILEGED:={{ privileged }}
 FAT:={{ fat }}
 
-LIBC:=$(SDK)pkgroot/lib/c
+LIBC:=$(SDK)pkgroot/slib/c
 
 OUT:=bin/
 ROOT:=$(OUT)root/
