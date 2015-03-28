@@ -23,6 +23,7 @@ OUT:=bin/
 ROOT:=$(OUT)root/
 BIN:=$(ROOT)bin/
 LIB:=$(ROOT)lib/
+SLIB:=$(ROOT)slib/
 ETC:=$(ROOT)etc/
 VAR:=$(ROOT)var/
 INC:=$(ROOT)include/
