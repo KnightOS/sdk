@@ -15,7 +15,7 @@ class PackageInfo():
     @staticmethod
     def read_package(path):
         process = subprocess.Popen(['kpack', '-i', path], stdout=subprocess.PIPE)
-        output = process.communicate()[0].decode("ascii")
+        output = process.communicate()[0].decode("windows-1252")
         result = PackageInfo()
         for line in output.splitlines():
             if not line.strip():
