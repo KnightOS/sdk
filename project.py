@@ -95,6 +95,11 @@ class Project:
             for package in files:
                 info = kpack.PackageInfo.read_package(os.path.join(self.root, ".knightos", "packages", package))
                 template_vars["packages"].append({ "name": info.name, "repo": info.repo, "filename": package })
+        if os.path.exists(os.path.join(self.root, ".knightos", "pkgroot", "slib")):
+            template_vars["libraries"] = list()
+            for root, dirs, files in os.walk(os.path.join(self.root, ".knightos", "pkgroot", "slib")):
+                for library in files:
+                    template_vars["libraries"].append({ "path": os.path.join(self.root, ".knightos", "pkgroot", "slib", library) })
         with open(os.path.join(get_resource_root(), "templates", "packages.make"), "r") as ofile:
             path = os.path.join(self.root, ".knightos", "packages.make")
             with open(os.path.join(path), "w") as file:
@@ -126,6 +131,10 @@ class Project:
                     if stdout.isatty():
                         stdout.write("\rDownloading {:<20} {:<20}".format(p, str(int(length / total * 100)) + '%'))
             stdout.write("\n")
+            # Initial extraction
+            FNULL = open(os.devnull, 'w')
+            subprocess.call(["kpack", "-e", path, os.path.join(self.root, ".knightos", "pkgroot")], stdout=FNULL, stderr=subprocess.STDOUT)
+            subprocess.call(["kpack", "-e", "-s", path, os.path.join(self.root, ".knightos", "pkgroot")], stdout=FNULL, stderr=subprocess.STDOUT)
         if not site_only:
             for package in packages:
                 deps.append(package)

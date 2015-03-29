@@ -84,10 +84,17 @@ def init(proj, root, exists, site_packages, template, template_vars, vcs, force)
     for i in template["files"]:
         if not os.path.exists(os.path.join(root, i["path"])):
             if not exists or (exists and i["reinit"]):
-                ofile = open(os.path.join(get_resource_root(), "templates", template["name"], i["template"]), "r")
+                mode = "r"
+                if "binary" in i and i["binary"]:
+                    mode = "rb"
+                ofile = open(os.path.join(get_resource_root(), "templates", template["name"], i["template"]), mode)
                 if ofile == "gitignore" and vcs != "git": pass
-                file = open(os.path.join(root, i["path"]), "w")
-                file.write(pystache.render(ofile.read(), template_vars))
+                if "binary" in i and i["binary"]:
+                    file = open(os.path.join(root, i["path"]), "wb")
+                    file.write(ofile.read())
+                else:
+                    file = open(os.path.join(root, i["path"]), "w")
+                    file.write(pystache.render(ofile.read(), template_vars))
 
     # TODO: Check for software listed in template['requries']
 

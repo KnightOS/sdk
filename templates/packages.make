@@ -1,7 +1,7 @@
 # This file is regenerated whenever you install new packages. Don't change it!
 
 dependencies: {{#packages}}__dependency__/{{repo}}/{{name}} {{/packages}}
-
+LIBRARIES={{#libraries}}{{path}} {{/libraries}}
 .PHONY: {{#packages}}__dependency__/{{repo}}/{{name}} {{/packages}}
 
 {{#packages}}
