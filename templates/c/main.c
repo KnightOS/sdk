@@ -3,7 +3,7 @@
 
 /* Warning! C support in KnightOS is highly experimental. Your mileage may vary. */
 
-void main(void) {
+void main() {
 	SCREEN *screen;
 	get_lcd_lock();
 	screen = screen_allocate();
