@@ -1,6 +1,6 @@
 # Project variables
 SDK=.knightos/
-INCLUDE=$(SDK)include/;$(SDK)
+INCLUDE=-I $(SDK)include/ -I $(SDK) -I ./
 AS:={{ assembler }}
 CC:={{ compiler }}
 EMU:={{ emulator }}

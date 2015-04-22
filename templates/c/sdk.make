@@ -5,15 +5,15 @@ include $(SDK)packages.make
 
 $(OUT)crt0.o: crt0.asm
 	mkdir -p $(OUT)
-	$(AS) -I"$(INCLUDE)" -c -o $(OUT)crt0.o crt0.asm
+	$(AS) $(INCLUDE) -c -o $(OUT)crt0.o crt0.asm
 
 $(OUT)%.o: $(OUT)%.asm
 	mkdir -p $(OUT)
-	$(AS) -I"$(INCLUDE)" -c -o $@ $<
+	$(AS) $(INCLUDE) -c -o $@ $<
 
 $(OUT)%.asm: %.c $(HEADERS)
 	mkdir -p $(OUT)
-	$(CC) -I.knightos/include/ -I./ -S --std-c99 $< -o $@
+	$(CC) $(INCLUDE) -S --std-c99 $< -o $@
 
 all: dependencies includes $(ALL_TARGETS)
 	@rm -rf $(SDK)root
