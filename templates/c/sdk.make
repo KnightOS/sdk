@@ -4,15 +4,15 @@ include $(SDK)packages.make
 .PHONY: all run clean help info package includes dependencies
 
 $(OUT)crt0.o: crt0.asm
-	mkdir -p $(OUT)
+	mkdir -p $(shell dirname $@)
 	$(AS) $(INCLUDE) -c -o $(OUT)crt0.o crt0.asm
 
 $(OUT)%.o: $(OUT)%.asm
-	mkdir -p $(OUT)
+	mkdir -p $(shell dirname $@)
 	$(AS) $(INCLUDE) -c -o $@ $<
 
 $(OUT)%.asm: %.c $(HEADERS)
-	mkdir -p $(OUT)
+	mkdir -p $(shell dirname $@)
 	$(CC) $(INCLUDE) -S --std-c99 $< -o $@
 
 all: dependencies includes $(ALL_TARGETS)
