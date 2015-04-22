@@ -8,7 +8,7 @@
     .dw __name
     .db KEXC_HEADER_END
 __name:
-    .db "example", 0
+    .db "{{ project_name }}", 0
 __start:
     call __relocate_data
     call __initialize_globals

@@ -1,4 +1,5 @@
 #include <knightos/display.h>
+#include <knightos/system.h>
 
 /* Warning! C support in KnightOS is highly experimental. Your mileage may vary. */
 
