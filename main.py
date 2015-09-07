@@ -23,6 +23,7 @@ Usage:
         [--kernel-source=<path>]
         [--force]
   knightos install [--site-only] <packages>...
+  knightos install-base
   knightos query <key>
   knightos -h | --help
   knightos --version
@@ -31,6 +32,7 @@ Options:
   init                      Initializes a new KnightOS project here or sets up an existing one
                             [name] is required when creating new projects.
   install                   Installs the specified packages
+  install-base              Installs packages required to run a complete version of KnightOS
   query                     Queries the project's package.config for <key>. Useful for automation.
   --site-only               Installs the package but does not add it to package.config
   --assembler=<assembler>   Specifies an alternate assembler. [default: sass]
@@ -53,6 +55,7 @@ Options:
 from docopt import docopt
 from init import execute as cmd_init
 from install import execute as cmd_install
+from installbase import execute as cmd_installbase
 from query import execute as cmd_query
 
 args = docopt(doc, version="1.7.1")
@@ -70,4 +73,5 @@ if args["init"]: cmd_init(project_name=args["<name>"], \
     platform=args["--platform"], vcs=args["--vcs"], kernel_source=args["--kernel-source"],
     compiler=args["--compiler"], template=args["--template"], force=args["--force"])
 if args["install"]: cmd_install(args["<packages>"], site_only=args["--site-only"])
+if args["install-base"]: cmd_installbase()
 if args["query"]: cmd_query(args["<key>"])
