@@ -142,10 +142,9 @@ class Project:
         if not init:
             self.set_config("dependencies", " ".join(deps))
         if link:
-            force_symlink(os.path.join(self.root, "bin", "castle"), os.path.join(self.root, ".knightos", "pkgroot", "bin", "launcher"))
-            force_symlink(os.path.join(self.root, "bin", "threadlist"), os.path.join(self.root, ".knightos", "pkgroot", "bin", "switcher"))
-            force_symlink(os.path.join(self.root, "bin", "fileman"), os.path.join(self.root, ".knightos", "pkgroot", "bin", "browser"))
-
+            force_symlink(os.path.join("bin", "castle"), os.path.join(self.root, ".knightos", "pkgroot", "bin", "launcher"))
+            force_symlink(os.path.join("bin", "threadlist"), os.path.join(self.root, ".knightos", "pkgroot", "bin", "switcher"))
+            force_symlink(os.path.join("bin", "fileman"), os.path.join(self.root, ".knightos", "pkgroot", "bin", "browser"))
 
         # Install packages
         self.gen_package_make()
