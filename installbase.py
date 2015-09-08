@@ -5,6 +5,6 @@ from resources import get_resource_root, get_kernel
 from project import Project
 
 packages = ['core/castle', 'core/threadlist', 'extra/fileman', 'core/settings', 'core/configlib'];
-def execute(site_only=True, init=True):
+def execute(site_only=True, init=False):
     project = Project()
-    return project.install(packages, site_only, init=init)
+    return project.install(packages, site_only, init=init, link=True)
