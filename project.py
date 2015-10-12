@@ -73,7 +73,7 @@ class Project:
     def get_implicit_packages(self, packages):
         extra = list()
         for package in packages:
-            info = requests.get('https://packages.knightos.org/api/v1/' + package)
+            info = requests.get('https://packages.knightos.org/api/v1/' + package, verify=False)
             if info.status_code == 404:
                 stderr.write("Cannot find '{0}' on packages.knightos.org.\n".format(package))
                 exit(1)
@@ -118,11 +118,11 @@ class Project:
         # Download packages
         for p in all_packages:
             stdout.write("Downloading {0}".format(p))
-            r = requests.get('https://packages.knightos.org/api/v1/' + p)
+            r = requests.get('https://packages.knightos.org/api/v1/' + p, verify=False)
             path = os.path.join(self.root, ".knightos", "packages", "{0}-{1}.pkg".format(r.json()['name'], r.json()['version']))
             files.append(path)
             with self.open(path, mode="wb") as fd:
-                _r = requests.get('https://packages.knightos.org/{0}/download'.format(r.json()['full_name']))
+                _r = requests.get('https://packages.knightos.org/{0}/download'.format(r.json()['full_name']), verify=False)
                 total = int(_r.headers.get('content-length'))
                 length = 0
                 for chunk in _r.iter_content(1024):
