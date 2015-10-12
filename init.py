@@ -124,14 +124,14 @@ def setup_root(root, project_name, force):
     return exists
 
 def install_kernel(root, platform):
-    releases = requests.get('https://api.github.com/repos/KnightOS/kernel/releases')
+    releases = requests.get('https://api.github.com/repos/KnightOS/kernel/releases', verify=False)
     release = releases.json()[0]
     print("Installing kernel " + release['tag_name'])
     assets = list()
     assets.append([r for r in release['assets'] if r['name'] == 'kernel-' + platform + '.rom'][0])
     for asset in assets:
         stdout.write("Downloading {0}...".format(asset['name']))
-        r = requests.get(asset['browser_download_url'])
+        r = requests.get(asset['browser_download_url'], verify=False)
         total = int(r.headers.get('content-length'))
         length = 0
         with open(os.path.join(root, asset['name']), 'wb') as fd:
