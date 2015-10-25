@@ -55,7 +55,7 @@ from init import execute as cmd_init
 from install import execute as cmd_install
 from query import execute as cmd_query
 
-args = docopt(doc, version="1.7.2")
+args = docopt(doc, version="1.9.4")
 
 if args["--platform"]:
     if not args["--platform"] in [ "TI73", "TI83p", "TI83pSE", "TI84p", "TI84pSE", "TI84pCSE" ]:
