@@ -23,7 +23,7 @@ all: dependencies includes $(ALL_TARGETS)
 	@cp -r $(ROOT)* $(SDK)root/
 	@cp $(SDK)kernel.rom $(SDK)debug.rom
 	@mkdir -p $(SDK)root/etc
-	@[ -e $(ETC)inittab ] || { echo "$(INIT)" > $(SDK)root/inittab; }
+	@[ -e $(ETC)inittab ] || { echo "$(INIT)" > $(SDK)root/etc/inittab; }
 	@$(GENKFS) $(SDK)debug.rom $(SDK)root/ > /dev/null
 
 includes:
