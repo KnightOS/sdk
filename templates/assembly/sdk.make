@@ -11,7 +11,7 @@ all: {{#kernel_path}}kernel{{/kernel_path}} dependencies includes $(ALL_TARGETS)
 	@cp -R $(ROOT)* $(SDK)root/
 	@cp $(SDK)kernel.rom $(SDK)debug.rom
 	@mkdir -p $(SDK)root/etc
-	@[[ -e $(ETC)inittab ]] || { echo "$(INIT)" > $(SDK)root/inittab; }
+	@[ -e $(ETC)inittab ] || { echo "$(INIT)" > $(SDK)root/inittab; }
 	@$(GENKFS) $(SDK)debug.rom $(SDK)root/ > /dev/null
 
 includes:
