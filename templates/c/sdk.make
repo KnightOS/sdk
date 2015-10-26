@@ -15,7 +15,7 @@ $(OUT)%.asm: %.c $(HEADERS)
 	mkdir -p $(shell dirname $@)
 	$(CC) $(INCLUDE) -S --std-c99 $< -o $@
 
-all: dependencies includes $(ALL_TARGETS)
+all: {{#kernel_path}}kernel{{/kernel_path}} dependencies includes $(ALL_TARGETS)
 	@rm -rf $(SDK)root
 	@mkdir -p $(SDK)root
 	@cp -r $(SDK)pkgroot/* $(SDK)root 2> /dev/null || true
@@ -25,6 +25,13 @@ all: dependencies includes $(ALL_TARGETS)
 	@mkdir -p $(SDK)root/etc
 	@[ -e $(ETC)inittab ] || { echo "$(INIT)" > $(SDK)root/etc/inittab; }
 	@$(GENKFS) $(SDK)debug.rom $(SDK)root/ > /dev/null
+
+{{#kernel_path}}
+kernel:
+	cd {{ kernel_path }} && make $(PLATFORM)
+	cp {{ kernel_path }}/bin/include/kernel.inc $(SDK)include/
+	cp {{ kernel_path }}/bin/$(PLATFORM)/kernel.rom $(SDK)kernel.rom
+{{/kernel_path}}
 
 includes:
 	@-cp -r $(SDK)pkgroot/include/* $(SDK)include/
