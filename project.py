@@ -7,6 +7,7 @@ import requests
 import subprocess
 import pystache
 import kpack
+import errno
 
 from resources import get_resource_root
 
@@ -105,7 +106,7 @@ class Project:
             with open(os.path.join(path), "w") as file:
                 file.write(pystache.render(ofile.read(), template_vars))
 
-    def install(self, packages, site_only, init=False):
+    def install(self, packages, site_only, init=False, link=False):
         if len(packages) == 0 and os.path.exists(os.path.join(packages[0], "package.config")):
             # TODO: Install local package
             pass
@@ -140,6 +141,11 @@ class Project:
                 deps.append(package)
         if not init:
             self.set_config("dependencies", " ".join(deps))
+        if link:
+            force_symlink(os.path.join("bin", "castle"), os.path.join(self.root, ".knightos", "pkgroot", "bin", "launcher"))
+            force_symlink(os.path.join("bin", "threadlist"), os.path.join(self.root, ".knightos", "pkgroot", "bin", "switcher"))
+            force_symlink(os.path.join("bin", "fileman"), os.path.join(self.root, ".knightos", "pkgroot", "bin", "browser"))
+
         # Install packages
         self.gen_package_make()
         return all_packages
@@ -153,3 +159,12 @@ def findroot():
             path = os.path.realpath(os.path.join(path, ".."))
     stderr.write("There doesn't seem to be a KnightOS project here. Did you run `knightos init`?\n")
     exit(1)
+
+#Currently there's no way to overwrite a pre-existing symlink
+def force_symlink(file1, file2):
+    try:
+        os.symlink(file1, file2)
+    except OSError as e:
+        if e.errno == errno.EEXIST:
+            os.remove(file2)
+            os.symlink(file1, file2)
