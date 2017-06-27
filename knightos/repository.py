@@ -3,10 +3,9 @@ import sys
 import json
 import requests
 
-# TODO: Double check that XDG_CACHE_DIR is correct when I have nets
 # TODO: Non-XDG platforms (Windows, OSX)
 _repo_path = os.environ.get("KNIGHTOS_REPO") or os.path.join(
-        os.environ.get("XDG_CACHE_DIR") or os.path.join(
+        os.environ.get("XDG_CACHE_HOME") or os.path.join(
             os.environ.get("HOME"), ".cache"), "knightos")
 os.makedirs(_repo_path, exist_ok=True)
 
@@ -28,7 +27,7 @@ def _update_manifest(name, version):
         r = requests.get('https://packages.knightos.org/api/v1/' + name)
         manifest = r.json()
         with open(manifest_path, "w") as f:
-            f.write(json.dumps(manifest))
+            f.write(json.dumps(manifest, indent=2))
     except:
         if not os.path.exists(manifest_path):
             print("Unable to download manifest for {} ({})".format(
@@ -67,7 +66,10 @@ def _download_package(name, version):
     sys.stdout.write("\n")
     return path
 
-def get_package(name, version=None):
+def ensure_package(name, version=None):
+    """
+    Fetches a package if necessary and returns its path in the cache.
+    """
     path = _package_path(name, version)
     if not os.path.exists(path):
         path = _download_package(name, version)
