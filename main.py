@@ -6,8 +6,8 @@ default_emulator="z80e-sdl"
 default_debugger="z80e-sdl --debug"
 
 if os.name == 'nt': # Windows
-        default_emulator="wabbitemu"
-        default_debugger="wabbitemu"
+    default_emulator="wabbitemu"
+    default_debugger="wabbitemu"
 
 doc = """KnightOS SDK
 
@@ -68,10 +68,20 @@ if args["--platform"]:
         args["--emulator"] += " -d " + args["--platform"]
         args["--debugger"] += " -d " + args["--platform"]
 
-if args["init"]: cmd_init(project_name=args["<name>"], \
-    assembler=args["--assembler"], emulator=args["--emulator"], debugger=args["--debugger"], \
-    platform=args["--platform"], vcs=args["--vcs"], kernel_source=args["--kernel-source"],
-    compiler=args["--compiler"], template=args["--template"], force=args["--force"])
-if args["install"]: cmd_install(args["<packages>"], site_only=args["--site-only"])
-if args["install-base"]: cmd_installbase()
-if args["query"]: cmd_query(args["<key>"])
+if args["init"]:
+    cmd_init(project_name=args["<name>"],
+        assembler=args["--assembler"],
+        emulator=args["--emulator"],
+        debugger=args["--debugger"],
+        platform=args["--platform"],
+        vcs=args["--vcs"],
+        kernel_source=args["--kernel-source"],
+        compiler=args["--compiler"],
+        template=args["--template"],
+        force=args["--force"])
+if args["install"]:
+    cmd_install(args["<packages>"], site_only=args["--site-only"])
+if args["install-base"]:
+    cmd_installbase()
+if args["query"]:
+    cmd_query(args["<key>"])
