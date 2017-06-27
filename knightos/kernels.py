@@ -44,6 +44,7 @@ def ensure_kernel(platform, version="latest"):
     if os.path.exists(path):
         return path, version
     sys.stdout.write("Downloading {0}...".format(asset["name"]))
+    sys.stdout.flush()
     r = http_get(asset["browser_download_url"])
     total = int(r.headers.get("content-length"))
     length = 0
@@ -53,5 +54,7 @@ def ensure_kernel(platform, version="latest"):
             length += len(chunk)
             if sys.stdout.isatty():
                 sys.stdout.write("\rDownloading {:<20} {:<20}".format(asset['name'], str(int(length / total * 100)) + '%'))
+                sys.stdout.flush()
     sys.stdout.write("\n")
+    sys.stdout.flush()
     return path, version

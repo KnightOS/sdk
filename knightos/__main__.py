@@ -56,7 +56,7 @@ Options:
 from docopt import docopt
 from knightos.commands.init import execute as cmd_init
 from knightos.commands.install import execute as cmd_install
-#from installbase import execute as cmd_installbase
+from knightos.commands.installbase import execute as cmd_installbase
 #from query import execute as cmd_query
 
 if __name__ == "__main__":

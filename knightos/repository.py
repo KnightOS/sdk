@@ -60,6 +60,7 @@ def _download_package(name, version):
     if not manifest:
         return None
     sys.stdout.write("Downloading {}".format(os.path.basename(name)))
+    sys.stdout.flush()
     with open(path, mode="wb") as f:
         _r = http_get(
             'https://packages.knightos.org/{}/download'.format(
@@ -73,7 +74,9 @@ def _download_package(name, version):
                 sys.stdout.write(
                         "\rDownloading {:<20} {:<20}".format(
                             name, str(int(length / total * 100)) + '%'))
+                sys.stdout.flush()
     sys.stdout.write("\n")
+    sys.stdout.flush()
     return path
 
 def ensure_package(name, version=None):
