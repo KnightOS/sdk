@@ -1,10 +1,10 @@
 import os
 import sys
 import json
-import requests
+from knightos.util import http_get
 
 # TODO: Non-XDG platforms (Windows, OSX)
-_repo_path = os.environ.get("KNIGHTOS_REPO") or os.path.join(
+_repo_path = os.environ.get("KNIGHTOS_CACHE") or os.path.join(
         os.environ.get("XDG_CACHE_HOME") or os.path.join(
             os.environ.get("HOME"), ".cache"), "knightos")
 os.makedirs(_repo_path, exist_ok=True)
@@ -19,19 +19,29 @@ def _package_path(name, version=None):
             name, os.readlink(path))
     return path
 
-def _update_manifest(name, version):
-    path = _package_path(name, version)
+def get_manifest(name):
+    path = _package_path(name)
     dirname = os.path.dirname(path)
     manifest_path = os.path.join(dirname, "manifest.json")
-    try:
-        r = requests.get('https://packages.knightos.org/api/v1/' + name)
+    if not os.path.exists(manifest_path):
+        return None
+    with open(manifest_path) as f:
+        manifest = json.loads(f.read())
+    return manifest
+
+def _update_manifest(name):
+    global _network
+    path = _package_path(name)
+    dirname = os.path.dirname(path)
+    manifest_path = os.path.join(dirname, "manifest.json")
+    r = http_get("https://packages.knightos.org/api/v1/" + name)
+    if r:
         manifest = r.json()
         with open(manifest_path, "w") as f:
             f.write(json.dumps(manifest, indent=2))
-    except:
+    else:
         if not os.path.exists(manifest_path):
-            print("Unable to download manifest for {} ({})".format(
-                    name, version or "latest"))
+            print("Unable to download manifest for {}".format(name))
             return None
         with open(manifest_path) as f:
             manifest = json.loads(f.read())
@@ -45,13 +55,13 @@ def _update_manifest(name, version):
     return manifest
 
 def _download_package(name, version):
-    manifest = _update_manifest(name, version)
+    manifest = _update_manifest(name)
     path = _package_path(name, version)
     if not manifest:
         return None
     sys.stdout.write("Downloading {}".format(os.path.basename(name)))
     with open(path, mode="wb") as f:
-        _r = requests.get(
+        _r = http_get(
             'https://packages.knightos.org/{}/download'.format(
                 manifest['full_name']))
         total = int(_r.headers.get('content-length'))
@@ -73,4 +83,5 @@ def ensure_package(name, version=None):
     path = _package_path(name, version)
     if not os.path.exists(path):
         path = _download_package(name, version)
-    return path
+    manifest = _update_manifest(name)
+    return path, manifest

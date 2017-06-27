@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from sys import stderr, exit, stdout
+import sys
 import os
 
 default_emulator="z80e-sdl"
@@ -53,35 +53,36 @@ Options:
 """.format(default_emulator, default_debugger)
 
 from docopt import docopt
-from init import execute as cmd_init
-from install import execute as cmd_install
-from installbase import execute as cmd_installbase
-from query import execute as cmd_query
+from knightos.commands.init import execute as cmd_init
+#from install import execute as cmd_install
+#from installbase import execute as cmd_installbase
+#from query import execute as cmd_query
 
-args = docopt(doc, version="1.9.5")
+if __name__ == "__main__":
+    args = docopt(doc, version="1.9.5")
 
-if args["--platform"]:
-    if not args["--platform"] in [ "TI73", "TI83p", "TI83pSE", "TI84p", "TI84pSE", "TI84pCSE" ]:
-        stderr.write("'{0}' is not a supported platform.\n".format(args["--platform"]))
-        exit(1)
-    if args["--emulator"] == 'z80e-sdl':
-        args["--emulator"] += " -d " + args["--platform"]
-        args["--debugger"] += " -d " + args["--platform"]
+    if args["--platform"]:
+        if not args["--platform"] in [ "TI73", "TI83p", "TI83pSE", "TI84p", "TI84pSE", "TI84pCSE" ]:
+            sys.stderr.write("'{0}' is not a supported platform.\n".format(args["--platform"]))
+            sys.exit(1)
+        if args["--emulator"] == 'z80e-sdl':
+            args["--emulator"] += " -d " + args["--platform"]
+            args["--debugger"] += " -d " + args["--platform"]
 
-if args["init"]:
-    cmd_init(project_name=args["<name>"],
-        assembler=args["--assembler"],
-        emulator=args["--emulator"],
-        debugger=args["--debugger"],
-        platform=args["--platform"],
-        vcs=args["--vcs"],
-        kernel_source=args["--kernel-source"],
-        compiler=args["--compiler"],
-        template=args["--template"],
-        force=args["--force"])
-if args["install"]:
-    cmd_install(args["<packages>"], site_only=args["--site-only"])
-if args["install-base"]:
-    cmd_installbase()
-if args["query"]:
-    cmd_query(args["<key>"])
+    if args["init"]:
+        cmd_init(project_name=args["<name>"],
+            assembler=args["--assembler"],
+            emulator=args["--emulator"],
+            debugger=args["--debugger"],
+            platform=args["--platform"],
+            vcs=args["--vcs"],
+            kernel_source=args["--kernel-source"],
+            compiler=args["--compiler"],
+            template=args["--template"],
+            force=args["--force"])
+    if args["install"]:
+        cmd_install(args["<packages>"], site_only=args["--site-only"])
+    if args["install-base"]:
+        cmd_installbase()
+    if args["query"]:
+        cmd_query(args["<key>"])

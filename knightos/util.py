@@ -29,3 +29,22 @@ def get_fat(platform):
     if platform == "TI84p": return 0x37
     if platform == "TI84pSE": return 0x77
     if platform == "TI84pCSE": return 0xF7
+
+_network = True
+
+def no_network():
+    global _network
+    if _network:
+        print("Network unavailable, falling back to cache")
+    _network = False
+    return None
+
+def http_get(*args, **kwargs):
+    global _network
+    if not _network:
+        return no_network()
+    try:
+        kwargs["timeout"] = 10
+        return requests.get(*args, **kwargs)
+    except:
+        return no_network()

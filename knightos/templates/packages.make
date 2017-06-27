@@ -1,13 +1,25 @@
 # This file is regenerated whenever you install new packages. Don't change it!
 
-dependencies: {{#packages}}__dependency__/{{repo}}/{{name}} {{/packages}}
-LIBRARIES={{#libraries}}{{path}} {{/libraries}}
-.PHONY: {{#packages}}__dependency__/{{repo}}/{{name}} {{/packages}}
+dependencies: {{#remote_packages}}__dependency__/{{repo}}/{{name}} {{/remote_packages}}
+LIBRARIES={{#static_libs}}{{path}} {{/static_libs}}
+.PHONY: {{#remote_packages}}__dependency__/{{repo}}/{{name}} {{/remote_packages}}
 
-{{#packages}}
+{{#remote_packages}}
 __dependency__/{{repo}}/{{name}}:
-	@kpack -e $(SDK)packages/{{filename}} $(SDK)pkgroot/ > /dev/null
-	@kpack -e -s $(SDK)packages/{{filename}} $(SDK)pkgroot/ > /dev/null
+	@kpack -e $(SDK)packages/{{name}}-{{version}}.pkg $(SDK)pkgroot/ > /dev/null
+	@kpack -e -s $(SDK)packages/{{name}}-{{version}}.pkg $(SDK)pkgroot/ > /dev/null
+	@mkdir -p $(SDK)include
 	@cp -r $(SDK)pkgroot/include/* $(SDK)include/ ||:
 
-{{/packages}}
+{{/remote_packages}}
+
+{{#local_packages}}
+__dependency__/{{repo}}/{{name}}:
+	@echo "Building local {{repo}}/{{name}}"
+	cd "{{path}}" && make package
+	@kpack -e {{path}}{{name}}-*.pkg $(SDK)pkgroot/ > /dev/null
+	@kpack -e -s {{path}}{{name}}-*.pkg $(SDK)pkgroot/ > /dev/null
+	@mkdir -p $(SDK)include
+	@cp -r $(SDK)pkgroot/include/* $(SDK)include/ ||:
+
+{{/local_packages}}

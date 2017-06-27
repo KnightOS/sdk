@@ -5,7 +5,7 @@ class PackageSource(Enum):
     local = "local"
     remote = "remote"
 
-class Package:
+class WorkspacePackage:
     def __init__(self, name, version="latest"):
         _name = name.split("/")
         self.repo = _name[0]
@@ -16,13 +16,17 @@ class Package:
 
     @property
     def version(self):
-        if pkg._version:
-            return pkg._version
-        return pkg._ws.config.get("version")
+        if self._version:
+            return self._version
+        return self._ws.config.get("version")
+
+    @property
+    def full_name(self):
+        return "{}/{}".format(self.repo, self.name)
 
     @staticmethod
     def init_remote(name, version="latest"):
-        pkg = Package(name)
+        pkg = WorkspacePackage(name)
         pkg._version = version
         pkg.source = PackageSource.remote
         pkg.path = None
@@ -31,7 +35,7 @@ class Package:
     @staticmethod
     def init_local(path):
         _ws = Workspace(path)
-        pkg = Package(_ws.name)
+        pkg = WorkspacePackage(_ws.name)
         pkg._ws = _ws
         pkg._version = None
         pkg.source = PackageSource.local
@@ -40,7 +44,7 @@ class Package:
     @staticmethod
     def from_dict(d):
         name = "{}/{}".format(d["repo"], d["name"])
-        pkg = Package(name)
+        pkg = WorkspacePackage(name)
         pkg._version = d["version"]
         pkg.source = PackageSource(d["source"])
         pkg.path = d["path"]
