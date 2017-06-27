@@ -41,7 +41,7 @@ def _update_manifest(name):
             f.write(json.dumps(manifest, indent=2))
     else:
         if not os.path.exists(manifest_path):
-            print("Unable to download manifest for {}".format(name))
+            print("Unable to download manifest for {}. Does it exist?".format(name))
             return None
         with open(manifest_path) as f:
             manifest = json.loads(f.read())
@@ -83,5 +83,5 @@ def ensure_package(name, version=None):
     path = _package_path(name, version)
     if not os.path.exists(path):
         path = _download_package(name, version)
-    manifest = _update_manifest(name)
+    manifest = _update_manifest(name) if path else None
     return path, manifest

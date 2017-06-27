@@ -102,22 +102,45 @@ class Workspace:
         name = self.config.get("name")
         return "{}/{}".format(repo, name)
 
+    def require_package(self, package):
+        self.install_package(package)
+        deps = self.config.get("dependencies")
+        if not deps:
+            deps = list()
+            normalized_deps = list()
+        else:
+            deps = deps.split(" ")
+            normalized_deps = [
+                d.split(":")[0] if ":" in d else d \
+                for d in deps
+            ]
+        if not any([d for d in normalized_deps if d == package]):
+            deps.append(package)
+            self.config.set("dependencies",
+                    " ".join(deps))
+
     def install_package(self, package, gen_packages_make=True):
+        from knightos.package import WorkspacePackage
         packages = os.path.join(self.kroot, "packages")
         pkgroot = os.path.join(self.kroot, "pkgroot")
         os.makedirs(packages, exist_ok=True)
         os.makedirs(pkgroot, exist_ok=True)
-        package = next((p for p in self.packages if p.full_name == package), None)
-        if not package:
-            package = WorkspacePackage(package)
+        _package = next((p for p in self.packages if p.full_name == package), None)
+        if not _package:
+            package = WorkspacePackage.init_remote(package)
             self.packages.append(package)
-            _write_packages(self)
+        else:
+            package = _package
         source, manifest = ensure_package(package.full_name)
         if not source or not manifest:
             sys.exit(1)
+        if not _package:
+            _write_packages(self)
         package._version = manifest["version"]
         print("Installing {}...".format(package.full_name))
         dest = os.path.join(packages, os.path.basename(source))
+        if os.path.exists(dest):
+            os.remove(dest)
         os.symlink(source, dest)
         FNULL = open(os.devnull, 'w')
         subprocess.call(["kpack", "-e",

@@ -17,7 +17,7 @@ class Config:
         return self._config.get(key)
 
     def set(self, key, value):
-        self._config.set(key)
+        self._config[key] = value
         with open(self._path, "w") as f:
             for key in self._config:
                 value = self._config[key]
