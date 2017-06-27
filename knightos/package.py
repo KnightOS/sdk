@@ -1,3 +1,4 @@
+import os
 from enum import Enum
 from knightos.workspace import Workspace
 
@@ -40,6 +41,7 @@ class WorkspacePackage:
         pkg._version = None
         pkg.source = PackageSource.local
         pkg.path = os.path.realpath(path)
+        return pkg
 
     @staticmethod
     def from_dict(d):

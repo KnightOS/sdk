@@ -2,7 +2,6 @@ import os
 import sys
 import json
 import shutil
-import subprocess
 import pystache
 from knightos.config import Config
 from knightos.repository import ensure_package
@@ -102,8 +101,8 @@ class Workspace:
         name = self.config.get("name")
         return "{}/{}".format(repo, name)
 
-    def require_package(self, package):
-        self.install_package(package)
+    def require_package(self, package, local_path=None):
+        self.install_package(package, local_path)
         deps = self.config.get("dependencies")
         if not deps:
             deps = list()
@@ -119,7 +118,7 @@ class Workspace:
             self.config.set("dependencies",
                     " ".join(deps))
 
-    def install_package(self, package, gen_packages_make=True):
+    def install_package(self, package, gen_packages_make=True, local_path=None):
         from knightos.package import WorkspacePackage
         packages = os.path.join(self.kroot, "packages")
         pkgroot = os.path.join(self.kroot, "pkgroot")
@@ -127,26 +126,28 @@ class Workspace:
         os.makedirs(pkgroot, exist_ok=True)
         _package = next((p for p in self.packages if p.full_name == package), None)
         if not _package:
-            package = WorkspacePackage.init_remote(package)
+            if local_path:
+                package = WorkspacePackage.init_local(local_path)
+            else:
+                package = WorkspacePackage.init_remote(package)
             self.packages.append(package)
         else:
             package = _package
-        source, manifest = ensure_package(package.full_name)
-        if not source or not manifest:
-            sys.exit(1)
+        if not local_path:
+            source, manifest = ensure_package(package.full_name)
+            if not source or not manifest:
+                sys.exit(1)
+            package._version = manifest["version"]
+        else:
+            source = os.path.join(package.path, "{}-{}.pkg".format(
+                package.name, package.version))
         if not _package:
             _write_packages(self)
-        package._version = manifest["version"]
         print("Installing {}...".format(package.full_name))
         dest = os.path.join(packages, os.path.basename(source))
         if os.path.exists(dest):
             os.remove(dest)
         os.symlink(source, dest)
-        FNULL = open(os.devnull, 'w')
-        subprocess.call(["kpack", "-e",
-            dest, pkgroot], stdout=FNULL, stderr=subprocess.STDOUT)
-        subprocess.call(["kpack", "-e", "-s",
-            dest, pkgroot], stdout=FNULL, stderr=subprocess.STDOUT)
         if gen_packages_make:
             _gen_packages_make(self)
 

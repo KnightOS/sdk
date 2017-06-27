@@ -3,9 +3,10 @@ import shutil
 import os
 from knightos.workspace import Workspace
 
-def execute(packages, site_only=False, init=False):
+def execute(packages, site_only=False, init=False, local_path=None):
     ws = Workspace()
-    if site_only:
-        [ws.install_package(package) for package in packages]
-    else:
-        [ws.require_package(package) for package in packages]
+    for package in packages:
+        if site_only:
+            ws.install_package(package, local_path=local_path)
+        else:
+            ws.require_package(package, local_path=local_path)

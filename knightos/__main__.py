@@ -22,7 +22,7 @@ Usage:
         [--vcs=<vcs>]
         [--kernel-source=<path>]
         [--force]
-  knightos install [--site-only] <packages>...
+  knightos install [--site-only] [--local-path=<path>] <packages>...
   knightos install-base
   knightos query <key>
   knightos -h | --help
@@ -35,6 +35,7 @@ Options:
   install-base              Installs packages required to run a complete version of KnightOS
   query                     Queries the project's package.config for <key>. Useful for automation.
   --site-only               Installs the package but does not add it to package.config
+  --local-path=<path>       Installs the package using a local copy of the source code.
   --assembler=<assembler>   Specifies an alternate assembler. [default: sass]
   --compiler=<compiler>     Specifies an alternate C compiler. [default: kcc]
   --template=<template>     Specifies a template. [default: assembly]
@@ -81,7 +82,9 @@ if __name__ == "__main__":
             template=args["--template"],
             force=args["--force"])
     if args["install"]:
-        cmd_install(args["<packages>"], site_only=args["--site-only"])
+        cmd_install(args["<packages>"],
+                site_only=args["--site-only"],
+                local_path=args["--local-path"])
     if args["install-base"]:
         cmd_installbase()
     if args["query"]:
