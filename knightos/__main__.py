@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 import sys
 import os
+import pkg_resources  # part of setuptools
+
+version = pkg_resources.require("knightos")[0].version
 
 default_emulator="z80e-sdl"
 default_debugger="z80e-sdl --debug"
@@ -60,7 +63,7 @@ from knightos.commands.installbase import execute as cmd_installbase
 from knightos.commands.query import execute as cmd_query
 
 if __name__ == "__main__":
-    args = docopt(doc, version="1.9.5")
+    args = docopt(doc, version=version)
 
     if args["--platform"]:
         if not args["--platform"] in [ "TI73", "TI83p", "TI83pSE", "TI84p", "TI84pSE", "TI84pCSE" ]:
