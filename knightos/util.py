@@ -1,7 +1,6 @@
 import os
 import requests
-from sys import stderr, exit
-from resources import get_resource_root
+import sys
 
 def get_key(platform):
     if platform == "TI73": return 0x02

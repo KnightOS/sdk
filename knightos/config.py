@@ -5,13 +5,14 @@ class Config:
         self._config = dict()
         self._path = os.path.join(workspace.root, "package.config")
         lines = None
-        with open(self._path) as f:
-            lines = f.readlines()
-        for line in lines:
-            if not "=" in line:
-                continue
-            key = line.split("=")[0].strip()
-            self._config[key] = line[line.index('=') + 1:].strip()
+        if os.path.exists(self._path):
+            with open(self._path) as f:
+                lines = f.readlines()
+            for line in lines:
+                if not "=" in line:
+                    continue
+                key = line.split("=")[0].strip()
+                self._config[key] = line[line.index('=') + 1:].strip()
 
     def get(self, key):
         return self._config.get(key)

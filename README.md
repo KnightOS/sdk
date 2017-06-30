@@ -1,6 +1,6 @@
 # KnightOS SDK
 
-This is the KnightOS developer SDK. To install, simply run `make install` on any Unix system.
+This is the KnightOS developer SDK. To install, simply run `./setup.py install` on any Unix system.
 
 Requires Python 3, [genkfs](https://github.com/KnightOS/genkfs), [kpack](https://github.com/KnightOS/kpack), and for Python: docopt, requests, pystache and pyyaml.
 

@@ -5,12 +5,9 @@ import sys
 import requests
 import yaml
 import pystache
-from project import Project
 import knightos.util as util
 from knightos.workspace import Workspace
 from knightos.kernels import ensure_kernel
-from util import copytree, which
-from install import execute as cmd_install
 
 def execute(project_name=None, emulator=None, debugger=None, assembler=None, platform=None, vcs=None, kernel_source=None, compiler=None, template=None, force=None):
     root = os.getcwd()
@@ -63,11 +60,11 @@ def init(ws, root, exists, site_packages, template, template_vars, vcs, force):
 
     print("Installing packages...")
     ws.ensure_packages()
-    if which('git') and vcs == "git":
+    if shutil.which('git') and vcs == "git":
         if not os.path.exists(os.path.join(root, ".git")):
             print("Initializing new git repository...")
             subprocess.call(["git", "init", root], stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
-    elif which('hg') and vcs == "hg":
+    elif shutil.which('hg') and vcs == "hg":
         if not os.path.exists(os.path.join(root, ".hg")):
             print("Initializing new hg repository...")
             subprocess.call(["hg", "init", root], stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
