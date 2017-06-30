@@ -30,6 +30,7 @@ all: {{#kernel_path}}kernel{{/kernel_path}} dependencies includes $(ALL_TARGETS)
 kernel:
 	cd {{ kernel_path }} && make $(PLATFORM)
 	cp {{ kernel_path }}/bin/include/kernel.inc $(SDK)include/
+	cp {{ kernel_path }}/bin/include/kernel.h $(SDK)include/
 	cp {{ kernel_path }}/bin/$(PLATFORM)/kernel.rom $(SDK)kernel.rom
 {{/kernel_path}}
 

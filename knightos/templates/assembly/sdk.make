@@ -21,6 +21,7 @@ includes:
 kernel:
 	cd {{ kernel_path }} && make $(PLATFORM)
 	cp {{ kernel_path }}/bin/include/kernel.inc $(SDK)include/
+	cp {{ kernel_path }}/bin/include/kernel.h $(SDK)include/
 	cp {{ kernel_path }}/bin/$(PLATFORM)/kernel.rom $(SDK)kernel.rom
 {{/kernel_path}}
 
