@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-from distutils.core import setup
+try:
+  from setuptools import setup
+except ImportError:
+  from distutils.core import setup
+from sys import platform
 import subprocess
 import glob
 import os
@@ -15,7 +19,7 @@ setup(
   author = 'Drew DeVault',
   author_email = 'sir@cmpwn.com',
   url = 'https://github.com/KnightOS/sdk',
-  install_requires = ['requests', 'yaml', 'pystache', 'docopt'],
+  install_requires = ['requests', 'pyyaml', 'pystache', 'docopt'],
   license = 'AGPL-3.0',
   scripts=['bin/knightos'],
   package_data={
