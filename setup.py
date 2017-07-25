@@ -24,9 +24,9 @@ setup(
   scripts=['bin/knightos'],
   package_data={
       'knightos': [
-          'templates/*',
-          'templates/c/*',
-          'templates/assembly/*',
+          'templates/\'*\'',
+          'templates/c/\'*\'',
+          'templates/assembly/\'*\'',
       ]
   },
 )
