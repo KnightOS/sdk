@@ -10,7 +10,6 @@ import os
 
 ver = os.environ.get("PKGVER") or subprocess.run(['git', 'describe', '--tags'],
       stdout=subprocess.PIPE).stdout.decode().strip()
-
 setup(
   name = 'knightos',
   packages = ['knightos', 'knightos.commands'],
@@ -22,11 +21,12 @@ setup(
   install_requires = ['requests', 'pyyaml', 'pystache', 'docopt'],
   license = 'AGPL-3.0',
   scripts=['bin/knightos'],
+  include_package_data=True,
   package_data={
       'knightos': [
-          'templates/\'*\'',
-          'templates/c/\'*\'',
-          'templates/assembly/\'*\'',
+          'knightos/templates/\'*\'',
+          'knightos/templates/c/\'*\'',
+          'knightos/templates/assembly/\'*\'',
       ]
   },
 )
