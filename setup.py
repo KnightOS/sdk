@@ -24,9 +24,9 @@ setup(
   include_package_data=True,
   package_data={
       'knightos': [
-          'knightos/templates/\'*\'',
-          'knightos/templates/c/\'*\'',
-          'knightos/templates/assembly/\'*\'',
+          'knightos/templates/*',
+          'knightos/templates/c/**/*',
+          'knightos/templates/assembly/**/*',
       ]
   },
 )
