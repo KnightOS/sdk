@@ -57,6 +57,8 @@ def init(ws, root, exists, site_packages, template, template_vars, vcs, force):
         shutil.move(os.path.join(ws.kroot,
             "kernel-" + template_vars['platform'] + ".rom"),
             os.path.join(root, ".knightos", "kernel.rom"))
+    else:
+        install_local_kernel(ws.root, ws.kroot, template_vars['platform'], template_vars['kernel_path']);
 
     print("Installing packages...")
     ws.ensure_packages()
@@ -122,7 +124,15 @@ def setup_root(root, project_name, force):
 
 def install_kernel(root, platform):
     path, version = ensure_kernel(platform)
+    print(os.path.join(root, os.path.basename(path)))
     print("Installing kernel " + version)
     os.symlink(path, os.path.join(root, os.path.basename(path)))
     with open(os.path.join(root, 'kernel-version'), 'w') as f:
         f.write(version)
+
+def install_local_kernel(root, kroot, platform, local_path):
+    print("root: " + root)
+    print("platform: " + platform)
+    print("path: " + local_path)
+    kernel_loc = os.path.join(root, local_path, 'bin', platform, 'kernel.rom')
+    os.symlink(kernel_loc, os.path.join(root, kroot, 'kernel.rom'))
