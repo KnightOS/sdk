@@ -22,11 +22,4 @@ setup(
   license = 'AGPL-3.0',
   scripts=['bin/knightos'],
   include_package_data=True,
-  package_data={
-      'knightos': [
-          'knightos/templates/*',
-          'knightos/templates/c/**/*',
-          'knightos/templates/assembly/**/*',
-      ]
-  },
 )
