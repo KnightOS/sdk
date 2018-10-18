@@ -16,6 +16,7 @@ KEY:={{ key }}
 UPGRADEEXT:={{ upgrade_ext }}
 PRIVILEGED:={{ privileged }}
 FAT:={{ fat }}
+KERNEL_PATH:={{ kernel_path }}
 
 LINK:=$(SDK)pkgroot/slib/
 LIBC:=$(LINK)c
