@@ -34,7 +34,7 @@ kernel:
 	cp {{ kernel_path }}/bin/$(PLATFORM)/kernel.rom $(SDK)kernel.rom
 {{/kernel_path}}
 
-includes:
+includes: dependencies
 	@-cp -r $(SDK)pkgroot/include/* $(SDK)include/
 
 run: all
