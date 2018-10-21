@@ -8,6 +8,7 @@ import pystache
 import knightos.util as util
 from knightos.workspace import Workspace
 from knightos.kernels import ensure_kernel
+import knightos.commands.install as install
 
 def execute(project_name=None, emulator=None, debugger=None, assembler=None, platform=None, vcs=None, kernel_source=None, compiler=None, template=None, force=None):
     root = os.getcwd()
@@ -61,6 +62,8 @@ def init(ws, root, exists, site_packages, template, template_vars, vcs, force):
         install_local_kernel(ws.root, ws.kroot, template_vars['platform'], template_vars['kernel_path']);
 
     print("Installing packages...")
+    install.execute(template["install"])
+    ws = Workspace(root)
     ws.ensure_packages()
     if shutil.which('git') and vcs == "git":
         if not os.path.exists(os.path.join(root, ".git")):
