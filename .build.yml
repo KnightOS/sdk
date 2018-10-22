@@ -1,0 +1,12 @@
+image: alpine/edge
+packages:
+  - python3
+  - py3-setuptools
+sources:
+  - https://github.com/KnightOS/sdk
+environment:
+  project: sdk
+tasks:
+  - build: |
+      cd ${project}
+      ./setup.py build
