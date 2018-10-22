@@ -34,8 +34,12 @@ def execute(project_name=None, emulator=None, debugger=None, assembler=None, pla
     if template == "c":
         assembler = "scas" # temporary
     template_dir = os.path.join(os.path.dirname(__file__), "..", "templates")
-    with open(os.path.join(template_dir, template, template + ".yaml")) as f:
-        template_yaml = yaml.load(f.read())
+    try:
+        with open(os.path.join(template_dir, template, template + ".yaml")) as f:
+            template_yaml = yaml.load(f.read())
+    except OSError as e:
+        print("Template '" + template + "' not found. Stopping.")
+        exit(1)
     template_vars = {
         'project_name': project_name,
         'assembler': assembler,
