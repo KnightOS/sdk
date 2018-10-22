@@ -66,9 +66,19 @@ def init(ws, root, exists, site_packages, template, template_vars, vcs, force):
         install_local_kernel(ws.root, ws.kroot, template_vars['platform'], template_vars['kernel_path']);
 
     print("Installing packages...")
-    install.execute(template["install"])
+
+    filtered_packages = template["install"]
+    to_exclude = ws.config.get("-exclude-template-deps")
+    if to_exclude:
+        to_exclude = to_exclude.split(" ")
+        for package in to_exclude:
+            if package in filtered_packages:
+                filtered_packages.remove(package)
+
+    install.execute(filtered_packages)
     ws = Workspace(root)
     ws.ensure_packages()
+
     if shutil.which('git') and vcs == "git":
         if not os.path.exists(os.path.join(root, ".git")):
             print("Initializing new git repository...")
