@@ -10,7 +10,7 @@ from knightos.workspace import Workspace
 from knightos.kernels import ensure_kernel
 import knightos.commands.install as install
 
-def execute(project_name=None, emulator=None, debugger=None, assembler=None, platform=None, vcs=None, kernel_source=None, compiler=None, template=None, force=None):
+def execute(project_name=None, emulator=None, debugger=None, assembler=None, platform=None, vcs=None, kernel_source=None, compiler=None, template=None, force=None, reinit_missing=None):
     root = os.getcwd()
     exists = setup_root(root, project_name, force)
     ws = Workspace(root)
@@ -53,9 +53,9 @@ def execute(project_name=None, emulator=None, debugger=None, assembler=None, pla
         'privileged': '{:02X}'.format(util.get_privileged(platform)),
         'kernel_path': kernel_source
     }
-    init(ws, root, exists, site_packages, template_yaml, template_vars, vcs, force)
+    init(ws, root, exists, site_packages, template_yaml, template_vars, vcs, force, reinit_missing)
 
-def init(ws, root, exists, site_packages, template, template_vars, vcs, force):
+def init(ws, root, exists, site_packages, template, template_vars, vcs, force, reinit_missing):
     print("Installing SDK...")
     if template_vars['kernel_path'] == None:
         install_kernel(ws.kroot, template_vars['platform'])
@@ -82,7 +82,7 @@ def init(ws, root, exists, site_packages, template, template_vars, vcs, force):
         input_path = os.path.join(template_dir, i["template"])
         output_path = os.path.join(ws.root, i["path"])
         if not os.path.exists(output_path):
-            if not exists or (exists and i["reinit"]):
+            if not exists or (exists and i["reinit"]) or reinit_missing:
                 mode = "r"
                 if "binary" in i and i["binary"]:
                     mode = "rb"

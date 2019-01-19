@@ -25,6 +25,7 @@ Usage:
         [--vcs=<vcs>]
         [--kernel-source=<path>]
         [--force]
+        [--reinit-missing]
   knightos install [--site-only] [--local-path=<path>] <packages>...
   knightos install-base
   knightos query <key>
@@ -49,6 +50,7 @@ Options:
   --vcs=<vcs>               Specifies an alternate version control system. [default: git]
                             Supported systems are: git, hg
   --kernel-source=<path>    Instead of downloading a kernel, compile one from <path>. Useful for testing kernels.
+  --reinit-missing          Regenerate missing files from the template
   --force                   Installs the SDK in this directory even if not empty
   -h --help                 Show this screen.
   --version                 Show version.
@@ -74,16 +76,17 @@ if __name__ == "__main__":
             args["--debugger"] += " -d " + args["--platform"]
 
     if args["init"]:
-        cmd_init(project_name=args["<name>"],
-            assembler=args["--assembler"],
-            emulator=args["--emulator"],
-            debugger=args["--debugger"],
-            platform=args["--platform"],
-            vcs=args["--vcs"],
-            kernel_source=args["--kernel-source"],
-            compiler=args["--compiler"],
-            template=args["--template"],
-            force=args["--force"])
+        cmd_init(project_name = args["<name>"],
+            assembler = args["--assembler"],
+            emulator = args["--emulator"],
+            debugger = args["--debugger"],
+            platform = args["--platform"],
+            vcs = args["--vcs"],
+            kernel_source = args["--kernel-source"],
+            compiler = args["--compiler"],
+            template = args["--template"],
+            force = args["--force"],
+            reinit_missing = args["--reinit-missing"])
     if args["install"]:
         cmd_install(args["<packages>"],
                 site_only=args["--site-only"],
