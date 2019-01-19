@@ -1,7 +1,7 @@
 # This file is regenerated whenever you install new packages. Don't change it!
 
 dependencies: {{#remote_packages}}__dependency__/{{repo}}/{{name}} {{/remote_packages}} {{#local_packages}} __dependency__/{{repo}}/{{name}} {{/local_packages}}
-LIBRARIES={{#static_libs}}{{path}} {{/static_libs}}
+LIBRARIES=$(SDK)pkgroot/slib/*
 .PHONY: {{#remote_packages}}__dependency__/{{repo}}/{{name}} {{/remote_packages}} {{#local_packages}} __dependency__/{{repo}}/{{name}} {{/local_packages}}
 
 {{#remote_packages}}
