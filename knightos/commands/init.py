@@ -65,29 +65,6 @@ def init(ws, root, exists, site_packages, template, template_vars, vcs, force):
     else:
         install_local_kernel(ws.root, ws.kroot, template_vars['platform'], template_vars['kernel_path']);
 
-    print("Installing packages...")
-
-    filtered_packages = template["install"]
-    to_exclude = ws.config.get("-exclude-template-deps")
-    if to_exclude:
-        to_exclude = to_exclude.split(" ")
-        for package in to_exclude:
-            if package in filtered_packages:
-                filtered_packages.remove(package)
-
-    install.execute(filtered_packages)
-    ws = Workspace(root)
-    ws.ensure_packages()
-
-    if shutil.which('git') and vcs == "git":
-        if not os.path.exists(os.path.join(root, ".git")):
-            print("Initializing new git repository...")
-            subprocess.call(["git", "init", root], stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
-    elif shutil.which('hg') and vcs == "hg":
-        if not os.path.exists(os.path.join(root, ".hg")):
-            print("Initializing new hg repository...")
-            subprocess.call(["hg", "init", root], stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
-
     print("Installing template...")
     template_dir = os.path.join(os.path.dirname(__file__), "..", "templates", template["name"])
     def _compile_file(input_path, output_path, tvars, mode):
@@ -110,6 +87,29 @@ def init(ws, root, exists, site_packages, template, template_vars, vcs, force):
                 if "binary" in i and i["binary"]:
                     mode = "rb"
                 _compile_file(input_path, output_path, template_vars, mode)
+
+    print("Installing packages...")
+
+    filtered_packages = template["install"]
+    to_exclude = ws.config.get("-exclude-template-deps")
+    if to_exclude:
+        to_exclude = to_exclude.split(" ")
+        for package in to_exclude:
+            if package in filtered_packages:
+                filtered_packages.remove(package)
+
+    install.execute(filtered_packages)
+    ws = Workspace(root)
+    ws.ensure_packages()
+
+    if shutil.which('git') and vcs == "git":
+        if not os.path.exists(os.path.join(root, ".git")):
+            print("Initializing new git repository...")
+            subprocess.call(["git", "init", root], stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
+    elif shutil.which('hg') and vcs == "hg":
+        if not os.path.exists(os.path.join(root, ".hg")):
+            print("Initializing new hg repository...")
+            subprocess.call(["hg", "init", root], stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
 
     # TODO: Check for software listed in template['requries']
 

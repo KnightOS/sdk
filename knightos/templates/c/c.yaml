@@ -29,5 +29,5 @@ files:
     path: crt0.asm
     reinit: False
 
-requires: [ 'sass', 'kpack', 'genkfs', 'make' ]
+requires: [ 'scas', 'kpack', 'genkfs', 'make' ]
 install: [ 'core/init', 'core/kernel-headers', 'extra/libc' ]
