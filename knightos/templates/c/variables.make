@@ -18,9 +18,6 @@ PRIVILEGED:={{ privileged }}
 FAT:={{ fat }}
 KERNEL_PATH:={{ kernel_path }}
 
-LINK:=$(SDK)pkgroot/slib/
-LIBC:=$(LINK)c
-
 OUT:=bin/
 ROOT:=$(OUT)root/
 BIN:=$(ROOT)bin/
