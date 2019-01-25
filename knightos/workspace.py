@@ -64,11 +64,7 @@ def _write_packages(ws):
 
 def _gen_packages_make(ws):
     from knightos.package import PackageSource
-    if os.path.exists(os.path.join(ws.kroot, "kernel-version")):
-        _packages = ws.packages
-    else:
-        # Omit kernel-headers when using a custom kernel
-        _packages = [p for p in ws.packages if p.full_name != "core/kernel-headers"]
+    _packages = ws.packages
     kwargs = {
         "remote_packages": [
             p for p in _packages if p.source == PackageSource.remote

@@ -63,7 +63,7 @@ def init(ws, root, exists, site_packages, template, template_vars, vcs, force, r
             "kernel-" + template_vars['platform'] + ".rom"),
             os.path.join(root, ".knightos", "kernel.rom"))
     else:
-        install_local_kernel(ws.root, ws.kroot, template_vars['platform'], template_vars['kernel_path']);
+        install_local_kernel(ws, template_vars['platform'], template_vars['kernel_path']);
 
     print("Installing template...")
     template_dir = os.path.join(os.path.dirname(__file__), "..", "templates", template["name"])
@@ -147,9 +147,13 @@ def install_kernel(root, platform):
     with open(os.path.join(root, 'kernel-version'), 'w') as f:
         f.write(version)
 
-def install_local_kernel(root, kroot, platform, local_path):
-    print("root: " + root)
+def install_local_kernel(ws, platform, local_path):
+    print("root: " + ws.root)
     print("platform: " + platform)
     print("path: " + local_path)
-    kernel_loc = os.path.join(root, local_path, 'bin', platform, 'kernel.rom')
-    os.symlink(kernel_loc, os.path.join(root, kroot, 'kernel.rom'))
+    kernel_loc = os.path.join(ws.root, local_path, 'bin', platform, 'kernel.rom')
+    os.symlink(kernel_loc, os.path.join(ws.root, ws.kroot, 'kernel.rom'))
+    version = subprocess.check_output(["git", "describe", "--abbrev=0"], cwd=os.path.join(ws.root, local_path))
+    # Make sure that the package is built
+    subprocess.call(["make", "kernel-headers"], cwd=os.path.join(ws.root, local_path))
+    ws.install_package("core/kernel-headers", os.path.join(ws.root, local_path, "kernel-headers-" + str(version) + ".pkg"))
