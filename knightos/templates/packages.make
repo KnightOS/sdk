@@ -17,8 +17,7 @@ __dependency__/{{repo}}/{{name}}:
 __dependency__/{{repo}}/{{name}}:
 	@echo "Building local {{repo}}/{{name}}"
 	@[ -d "{{path}}/.knightos" ] || { cd "{{path}}" && python -m knightos init; }
-	cd "{{path}}" && make package
-	cd "{{path}}" && make package
+	$(MAKE) -C "{{path}}" package
 	@kpack -e {{path}}/{{name}}-*.pkg $(SDK)pkgroot/ > /dev/null
 	@kpack -e -s {{path}}/{{name}}-*.pkg $(SDK)pkgroot/ > /dev/null
 	@mkdir -p $(SDK)include

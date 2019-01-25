@@ -28,7 +28,7 @@ all: {{#kernel_path}}kernel{{/kernel_path}} dependencies includes $(ALL_TARGETS)
 
 {{#kernel_path}}
 kernel:
-	cd {{ kernel_path }} && make $(PLATFORM)
+	$(MAKE) -C {{ kernel_path }} $(PLATFORM)
 	cp {{ kernel_path }}/bin/include/kernel.inc $(SDK)include/
 	cp {{ kernel_path }}/bin/include/kernel.h $(SDK)include/
 {{/kernel_path}}
@@ -49,8 +49,10 @@ clean:
 	@rm -rf $(SDK)debug.rom
 	@rm -rf {{ project_name }}-$(VERSION).pkg
 
-package: all
+{{ project_name }}-$(VERSION).pkg: $(ALL_TARGETS)
 	kpack {{ project_name }}-$(VERSION).pkg $(ROOT)
+    
+package: {{ project_name }}-$(VERSION).pkg
 
 install: package
 	kpack -e -s {{ project_name }}-$(VERSION).pkg $(PREFIX)
