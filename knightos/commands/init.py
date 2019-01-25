@@ -153,7 +153,3 @@ def install_local_kernel(ws, platform, local_path):
     print("path: " + local_path)
     kernel_loc = os.path.join(ws.root, local_path, 'bin', platform, 'kernel.rom')
     os.symlink(kernel_loc, os.path.join(ws.root, ws.kroot, 'kernel.rom'))
-    version = subprocess.check_output(["git", "describe", "--abbrev=0"], cwd=os.path.join(ws.root, local_path))
-    # Make sure that the package is built
-    subprocess.call(["make", "kernel-headers"], cwd=os.path.join(ws.root, local_path))
-    ws.install_package("core/kernel-headers", os.path.join(ws.root, local_path, "kernel-headers-" + str(version) + ".pkg"))

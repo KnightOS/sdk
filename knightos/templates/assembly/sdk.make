@@ -15,7 +15,8 @@ all: {{#kernel_path}}kernel{{/kernel_path}} dependencies includes $(ALL_TARGETS)
 	@$(GENKFS) $(SDK)debug.rom $(SDK)root/ > /dev/null
 
 includes:
-	@-cp -r $(SDK)pkgroot/include/* $(SDK)include/
+# If there are no includes to copy, suppress confusing "ignored error" message
+	@-cp -r $(SDK)pkgroot/include/* $(SDK)include/ ||:
 
 {{#kernel_path}}
 kernel:

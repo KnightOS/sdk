@@ -64,7 +64,11 @@ def _write_packages(ws):
 
 def _gen_packages_make(ws):
     from knightos.package import PackageSource
-    _packages = ws.packages
+    if os.path.exists(os.path.join(ws.kroot, "kernel-version")):
+        _packages = ws.packages
+    else:
+        # Omit kernel-headers when using a custom kernel
+        _packages = [p for p in ws.packages if p.full_name != "core/kernel-headers"]
     kwargs = {
         "remote_packages": [
             p for p in _packages if p.source == PackageSource.remote
@@ -103,7 +107,7 @@ class Workspace:
         return "{}/{}".format(repo, name)
 
     def require_package(self, package, local_path=None):
-        self.install_package(package, local_path)
+        self.install_package(package, local_path = local_path)
         deps = self.config.get("dependencies")
         if not deps:
             deps = list()
@@ -121,6 +125,7 @@ class Workspace:
 
     def install_package(self, package, gen_packages_make=True, local_path=None):
         from knightos.package import WorkspacePackage
+        from knightos.package import PackageSource
         packages = os.path.join(self.kroot, "packages")
         pkgroot = os.path.join(self.kroot, "pkgroot")
         os.makedirs(packages, exist_ok=True)
@@ -134,14 +139,20 @@ class Workspace:
             self.packages.append(package)
         else:
             package = _package
-        if not local_path:
+        if local_path:
+            if package.source == PackageSource.remote:
+                print("Overriding remote package...")
+                self.packages.remove(package)
+                package = WorkspacePackage.init_local(local_path)
+                self.packages.append(package)
+                _package = None
+            source = os.path.join(package.path, "{}-{}.pkg".format(
+                package.name, package.version))
+        else:
             source, manifest = ensure_package(package.full_name)
             if not source or not manifest:
                 sys.exit(1)
             package._version = manifest["version"]
-        else:
-            source = os.path.join(package.path, "{}-{}.pkg".format(
-                package.name, package.version))
         if not _package:
             _write_packages(self)
         print("Installing {}...".format(package.full_name))

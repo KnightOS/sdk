@@ -31,11 +31,11 @@ kernel:
 	cd {{ kernel_path }} && make $(PLATFORM)
 	cp {{ kernel_path }}/bin/include/kernel.inc $(SDK)include/
 	cp {{ kernel_path }}/bin/include/kernel.h $(SDK)include/
-	cp {{ kernel_path }}/bin/$(PLATFORM)/kernel.rom $(SDK)kernel.rom
 {{/kernel_path}}
 
 includes: dependencies
-	@-cp -r $(SDK)pkgroot/include/* $(SDK)include/
+# If there are no includes to copy, suppress confusing "ignored error" message
+	@-cp -r $(SDK)pkgroot/include/* $(SDK)include/ ||:
 
 run: all
 	$(EMU) $(SDK)debug.rom
