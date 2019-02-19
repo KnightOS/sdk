@@ -10,8 +10,8 @@
 __name:
     .db "{{ project_name }}", 0
 __start:
-    call __initialize_globals
     call __relocate_data
+    call __initialize_globals
     jp _main
 
 _exit:
