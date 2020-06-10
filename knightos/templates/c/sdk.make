@@ -13,7 +13,7 @@ $(OUT)%.o: $(OUT)%.asm
 
 $(OUT)%.asm: %.c $(HEADERS)
 	mkdir -p $(shell dirname $@)
-	$(CC) $(INCLUDE) -S --std-c99 $< -o $@
+	$(CC) $(INCLUDE) -S ${CFLAGS} $< -o $@
 
 all: {{#kernel_path}}kernel{{/kernel_path}} dependencies includes $(ALL_TARGETS)
 	@rm -rf $(SDK)root
