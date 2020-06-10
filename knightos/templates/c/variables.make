@@ -3,6 +3,7 @@ SDK=.knightos/
 INCLUDE=-I $(SDK)include/ -I $(SDK) -I ./
 AS:={{ assembler }}
 CC:={{ compiler }}
+CFLAGS:=--std-c99
 EMU:={{ emulator }}
 DEBUGGER:={{ debugger }}
 ASFLAGS:=-fauto-relocation
