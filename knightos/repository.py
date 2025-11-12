@@ -9,7 +9,7 @@ _repo_path = os.environ.get("KNIGHTOS_CACHE") or os.path.join(
             os.environ.get("HOME"), ".cache"), "knightos")
 os.makedirs(_repo_path, exist_ok=True)
 
-_registry_url = os.environ.get("KNIGHTOS_REGISTRY_URL", "https://packages.knightos.org")
+_repository_url = os.environ.get("KNIGHTOS_REPOSITORY_URL", "https://packages.knightos.org")
 
 def _package_path(name, version=None):
     path = os.path.join(_repo_path,
@@ -36,7 +36,7 @@ def _update_manifest(name):
     path = _package_path(name)
     dirname = os.path.dirname(path)
     manifest_path = os.path.join(dirname, "manifest.json")
-    r = http_get(_registry_url + "/api/v1/" + name)
+    r = http_get(_repository_url + "/api/v1/" + name)
     if r:
         manifest = r.json()
         with open(manifest_path, "w") as f:
@@ -66,7 +66,7 @@ def _download_package(name, version):
     with open(path, mode="wb") as f:
         _r = http_get(
             '{}/{}/download'.format(
-                _registry_url, manifest['full_name']))
+                _repository_url, manifest['full_name']))
         if not _r:
             print("Failed to download package")
             return None
