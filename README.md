@@ -8,12 +8,14 @@ You can use your choice of assembler and emulator, but the default is [sass](htt
 
 For usage information, run `knightos --help` after install.
 
+By default, the SDK uses `packages.knightos.org` as the package repository. You can change this by setting the `KNIGHTOS_REGISTRY_URL` environment variable.
+
 ## Help, Bugs, Feedback
 
 If you need help with KnightOS, want to keep up with progress, chat with
 developers, or ask any other questions about KnightOS, you can hang out in the
 IRC channel: [#knightos on irc.freenode.net](http://webchat.freenode.net/?channels=knightos).
- 
+
 To report bugs, please create [a GitHub issue](https://github.com/KnightOS/KnightOS/issues/new) or contact us on IRC.
- 
+
 If you'd like to contribute to the project, please see the [contribution guidelines](http://www.knightos.org/contributing).

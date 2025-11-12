@@ -9,6 +9,8 @@ _repo_path = os.environ.get("KNIGHTOS_CACHE") or os.path.join(
             os.environ.get("HOME"), ".cache"), "knightos")
 os.makedirs(_repo_path, exist_ok=True)
 
+_registry_url = os.environ.get("KNIGHTOS_REGISTRY_URL", "https://packages.knightos.org")
+
 def _package_path(name, version=None):
     path = os.path.join(_repo_path,
             name,
@@ -34,7 +36,7 @@ def _update_manifest(name):
     path = _package_path(name)
     dirname = os.path.dirname(path)
     manifest_path = os.path.join(dirname, "manifest.json")
-    r = http_get("https://packages.knightos.org/api/v1/" + name)
+    r = http_get(_registry_url + "/api/v1/" + name)
     if r:
         manifest = r.json()
         with open(manifest_path, "w") as f:
@@ -63,14 +65,18 @@ def _download_package(name, version):
     sys.stdout.flush()
     with open(path, mode="wb") as f:
         _r = http_get(
-            'https://packages.knightos.org/{}/download'.format(
-                manifest['full_name']))
-        total = int(_r.headers.get('content-length'))
+            '{}/{}/download'.format(
+                _registry_url, manifest['full_name']))
+        if not _r:
+            print("Failed to download package")
+            return None
+        content_length = _r.headers.get('content-length')
+        total = int(content_length) if content_length else None
         length = 0
         for chunk in _r.iter_content(1024):
             f.write(chunk)
             length += len(chunk)
-            if sys.stdout.isatty():
+            if sys.stdout.isatty() and total:
                 sys.stdout.write(
                         "\rDownloading {:<20} {:<20}".format(
                             name, str(int(length / total * 100)) + '%'))
