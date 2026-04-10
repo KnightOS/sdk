@@ -36,17 +36,23 @@ def _update_manifest(name):
     path = _package_path(name)
     dirname = os.path.dirname(path)
     manifest_path = os.path.join(dirname, "manifest.json")
-    r = http_get(_repository_url + "/api/v1/" + name)
+    r = http_get(_repository_url + "/api/v1/" + name + "/manifest.json")
     if r:
         manifest = r.json()
         with open(manifest_path, "w") as f:
             f.write(json.dumps(manifest, indent=2))
     else:
-        if not os.path.exists(manifest_path):
-            print("Unable to download manifest for {}. Does it exist?".format(name))
-            return None
-        with open(manifest_path) as f:
-            manifest = json.loads(f.read())
+        r = http_get(_repository_url + "/api/v1/" + name)
+        if r:
+            manifest = r.json()
+            with open(manifest_path, "w") as f:
+                f.write(json.dumps(manifest, indent=2))
+        else:
+            if not os.path.exists(manifest_path):
+                print("Unable to download manifest for {}. Does it exist?".format(name))
+                return None
+            with open(manifest_path) as f:
+                manifest = json.loads(f.read())
     version = manifest["version"]
     latest = os.path.join(os.path.dirname(path), "latest")
     if os.path.exists(latest):
