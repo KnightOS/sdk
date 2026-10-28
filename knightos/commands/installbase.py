@@ -19,7 +19,7 @@ def execute():
     ws = Workspace()
     for package in packages:
         ws.install_package(package)
-	bin_dir = os.path.join(ws.kroot, "pkgroot", "bin")
+    bin_dir = os.path.join(ws.kroot, "pkgroot", "bin")
     os.makedirs(bin_dir, exist_ok=True)
     for name, target in links.items():
         path = os.path.join(bin_dir, name)
