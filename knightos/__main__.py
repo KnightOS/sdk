@@ -28,6 +28,7 @@ Usage:
         [--reinit-missing]
   knightos install [--site-only] [--local-path=<path>] <packages>...
   knightos install-base
+  knightos uninstall [--keep-installed] <packages>...
   knightos query <key>
   knightos -h | --help
   knightos --version
@@ -37,9 +38,11 @@ Options:
                             [name] is required when creating new projects.
   install                   Installs the specified packages
   install-base              Installs packages required to run a complete version of KnightOS
+  uninstall                 Uninstalls the specified packages and removes them from packages.config
   query                     Queries the project's package.config for <key>. Useful for automation.
   --site-only               Installs the package but does not add it to package.config
   --local-path=<path>       Installs the package using a local copy of the source code.
+  --keep-installed          Only removes the packages from packages.config
   --assembler=<assembler>   Specifies an alternate assembler. [default: sass]
   --compiler=<compiler>     Specifies an alternate C compiler. [default: kcc]
   --template=<template>     Specifies a template. [default: assembly]
@@ -62,6 +65,7 @@ from docopt import docopt
 from knightos.commands.init import execute as cmd_init
 from knightos.commands.install import execute as cmd_install
 from knightos.commands.installbase import execute as cmd_installbase
+from knightos.commands.uninstall import execute as cmd_uninstall
 from knightos.commands.query import execute as cmd_query
 
 if __name__ == "__main__":
@@ -93,5 +97,8 @@ if __name__ == "__main__":
                 local_path=args["--local-path"])
     if args["install-base"]:
         cmd_installbase()
+    if args["uninstall"]:
+        cmd_uninstall(args["<packages>"],
+            keep_installed=args["--keep-installed"])
     if args["query"]:
         cmd_query(args["<key>"])

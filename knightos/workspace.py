@@ -1,7 +1,11 @@
 import os
+import re
 import sys
+import glob
 import json
 import shutil
+import tempfile
+import subprocess
 import pystache
 from knightos.config import Config
 from knightos.repository import ensure_package
@@ -91,6 +95,79 @@ def _gen_packages_make(ws):
         with open(os.path.join(path), "w") as f:
             f.write(pystache.render(template.read(), kwargs))
 
+# Always installed by the SDK (see _collect_packages): uninstalling them is pointless.
+_required_packages = ["core/kernel-headers", "core/init"]
+
+def _remove_from_config_list(ws, key, package):
+    """Removes `package` (with or without `:version`) from a space-separated
+    list in package.config. Returns True if it was present."""
+    value = ws.config.get(key)
+    if not value:
+        return False
+    items = value.split(" ")
+    kept = [i for i in items if i.split(":")[0] != package]
+    if len(kept) == len(items):
+        return False
+    if kept:
+        ws.config.set(key, " ".join(kept))
+    else:
+        ws.config.remove(key)
+    return True
+
+def _package_links(ws, package):
+    """Links to the installed .pkg file in .knightos/packages/"""
+    packages = os.path.join(ws.kroot, "packages")
+    if not os.path.isdir(packages):
+        return []
+    pattern = re.compile(r"^{}-\d.*\.pkg$".format(re.escape(package.name)))
+    return [os.path.join(packages, f) for f in os.listdir(packages) if pattern.match(f)]
+
+def _package_file(ws, package):
+    from knightos.package import PackageSource
+    files = [l for l in _package_links(ws, package) if os.path.exists(l)]
+    if not files and package.source == PackageSource.local:
+        files = glob.glob(os.path.join(package.path, "{}-*.pkg".format(package.name)))
+    return files[0] if files else None
+
+def _package_dependencies(pkg_file):
+    try:
+        info = subprocess.run(["kpack", "-i", pkg_file],
+                stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, check=True)
+    except (OSError, subprocess.CalledProcessError):
+        return []
+    for line in info.stdout.decode().splitlines():
+        if line.startswith("dependencies="):
+            return [d.split(":")[0] for d in line[len("dependencies="):].split()]
+    return []
+
+def _remove_file(base, rel):
+    path = os.path.join(base, rel)
+    if not os.path.lexists(path) or os.path.isdir(path):
+        return
+    os.remove(path)
+    # Also remove the directories that are left empty
+    parent = os.path.dirname(path)
+    while parent != base and not os.listdir(parent):
+        os.rmdir(parent)
+        parent = os.path.dirname(parent)
+
+def _remove_extracted_files(ws, pkg_file):
+    """Removes from pkgroot/ (and include/) the files extracted from pkg_file
+    by packages.make (kpack -e and kpack -e -s)."""
+    pkgroot = os.path.join(ws.kroot, "pkgroot")
+    include = os.path.join(ws.kroot, "include")
+    with tempfile.TemporaryDirectory() as tmp:
+        for flags in (["-e"], ["-e", "-s"]):
+            subprocess.run(["kpack"] + flags + [pkg_file, tmp],
+                    stdout=subprocess.DEVNULL, check=True)
+        for dirpath, _, filenames in os.walk(tmp):
+            for filename in filenames:
+                rel = os.path.relpath(os.path.join(dirpath, filename), tmp)
+                _remove_file(pkgroot, rel)
+                if rel.startswith("include" + os.sep):
+                    _remove_file(include, os.path.relpath(rel, "include"))
+
+
 class Workspace:
     def __init__(self, root=None):
         self.root = root
@@ -162,6 +239,49 @@ class Workspace:
         os.symlink(source, dest)
         if gen_packages_make:
             _gen_packages_make(self)
+
+    def uninstall_package(self, package, keep_installed=False):
+        if package in _required_packages:
+            print("{} is required by the SDK and cannot be uninstalled.".format(package))
+            return False
+        was_dependency = _remove_from_config_list(self, "dependencies", package)
+        if keep_installed:
+            if was_dependency:
+                print("Removed {} from package.config.".format(package))
+            else:
+                print("{} is not a dependency of this project.".format(package))
+            return was_dependency
+        _remove_from_config_list(self, "-sdk-site-packages", package)
+        _package = next((p for p in self.packages if p.full_name == package), None)
+        if not _package:
+            if was_dependency:
+                print("Removed {} from package.config.".format(package))
+                return True
+            print("{} is not installed.".format(package))
+            return False
+        for other in self.packages:
+            if other is _package:
+                continue
+            pkg_file = _package_file(self, other)
+            if pkg_file and package in _package_dependencies(pkg_file):
+                print("Warning: {} depends on {}.".format(other.full_name, package))
+        print("Uninstalling {}...".format(package))
+        pkg_file = _package_file(self, _package)
+        removed_files = False
+        if pkg_file:
+            try:
+                _remove_extracted_files(self, pkg_file)
+                removed_files = True
+            except (OSError, subprocess.CalledProcessError):
+                pass
+        if not removed_files:
+            print("Warning: unable to read the package file, its files were left in .knightos/pkgroot/")
+        for link in _package_links(self, _package):
+            os.remove(link)
+        self.packages.remove(_package)
+        _write_packages(self)
+        _gen_packages_make(self)
+        return True
 
     def ensure_packages(self):
         packages = os.path.join(self.kroot, "packages")

@@ -19,6 +19,14 @@ class Config:
 
     def set(self, key, value):
         self._config[key] = value
+        self._save()
+
+    def remove(self, key):
+        if key in self._config:
+            del self._config[key]
+            self._save()
+
+    def _save(self):
         with open(self._path, "w") as f:
             for key in self._config:
                 value = self._config[key]
